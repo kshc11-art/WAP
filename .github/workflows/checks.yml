@@ -1,0 +1,71 @@
+name: checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # 이 저장소는 파일명이 대부분 한글이다. 글롭·ls-files 기본 설정으로는
+      # 파일이 조용히 누락되므로, 모든 검사는 -z 로 목록을 받고
+      # "검사 대상 0개"를 성공이 아니라 실패로 처리한다.
+      - name: 업무데이터·인증정보 스캔
+        run: python3 tools/guard.py --all
+
+      # 검사 대상 개수를 글롭이 아니라 레지스트리에서 뽑는다.
+      # 경로가 바뀌거나 파일명이 비ASCII여도 검사가 조용히 꺼지지 않는다.
+      - name: 레지스트리 ↔ 파일 일치 검사
+        run: python3 tools/check_registry.py
+
+      - name: userscript 구문 검사
+        run: |
+          set -euo pipefail
+          n=0
+          while IFS= read -r -d '' f; do
+            echo "· $f"
+            node --check "$f"
+            n=$((n+1))
+          done < <(git -c core.quotePath=false ls-files -z '*.js')
+          echo "검사한 JS 파일: $n개"
+          # 아직 스크립트를 반입하기 전에는 0개가 정상이다. 반입이 시작되면
+          # 레지스트리 검사가 개수 불일치를 잡으므로 여기서 0을 막을 필요가 없다.
+          expected=$(grep -c "^    status: imported" contracts/scripts.yaml || true)
+          if [ "$n" -eq 0 ] && [ "$expected" -gt 0 ]; then
+            echo "::error::레지스트리는 ${expected}개를 기대하는데 검사 대상이 0개입니다."
+            exit 1
+          fi
+
+      - name: Python 구문 검사
+        run: |
+          set -euo pipefail
+          n=0
+          while IFS= read -r -d '' f; do
+            python3 -m py_compile "$f"
+            n=$((n+1))
+          done < <(git -c core.quotePath=false ls-files -z '*.py')
+          echo "검사한 Python 파일: $n개"
+          if [ "$n" -eq 0 ]; then
+            echo "::error::tools/ 의 검사 스크립트조차 없습니다. 글롭이 깨졌습니다."
+            exit 1
+          fi
+
+      # 이 저장소에는 사내 화면 계약과 내부 API 지도가 쌓인다.
+      # 공개 전환은 클릭 두 번이므로 기계가 막는다.
+      - name: 저장소가 private 인지 확인
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          vis=$(gh api "repos/${{ github.repository }}" --jq .visibility)
+          echo "visibility: $vis"
+          if [ "$vis" != "private" ]; then
+            echo "::error::이 저장소는 private 이어야 합니다. 현재: $vis"
+            exit 1
+          fi
