@@ -23,18 +23,18 @@
 
 ---
 
-## 어디에 무엇이 있나
+## 어디에 무엇이 있나 — 최상위 폴더 6개
 
 | | |
 |---|---|
-| [`inbox/`](inbox/) | **손대는 유일한 폴더.** 여기에 넣고 커밋 |
-| `scripts/` | 봇 생성물. Tampermonkey에 붙여넣을 사본 |
-| [`contracts/`](contracts/) | 사실(fact)의 원본 — slug·엔드포인트·상태코드·화면·쓰기가드·단축키 |
-| `state/` | 자동 생성 색인·충돌표·PII 리포트·AI 지시서. 사람이 안 건드림 |
-| `lib/` `rules/` | 공유 코드 원본 · JS와 Python이 함께 읽는 분류 규칙 |
-| `python/` | 브리지(manifest 생산자) · 보고서·xlsx 생성 |
-| `twin/` `corpus/` `manual/` | 화면 골격 · 법령 조문 · 인터랙티브 매뉴얼 |
-| [`tools/`](tools/) | 가드·레지스트리 검사·반입·색인 |
+| [`inbox/`](inbox/) | **손대는 유일한 폴더.** 아무 이름으로 넣고 커밋하면 봇이 정리한다 |
+| [`scripts/`](scripts/) | Tampermonkey에 붙여넣을 파일 (`<slug>.user.js`) + `_shared/` 공통 코드 |
+| [`contracts/`](contracts/) | 사실(fact) — 스크립트 원장 · 화면 · 엔드포인트 · 상태코드 · 규칙 · fixture |
+| `python/` | 브리지(manifest 생산자) · 보고서 · xlsx 생성 |
+| [`tools/`](tools/) | 가드 · 반입기 · 색인 생성기 |
+| [`docs/`](docs/) | 읽는 것 |
+
+뒤에 `state/`(전부 자동 생성, 안 봐도 됨)와 `manual/`(법령·매뉴얼)이 생긴다.
 
 ---
 

@@ -1,0 +1,65 @@
+name: import
+
+# inbox/ 에 파일이 들어오면 정규화해서 scripts/ 로 옮긴다.
+# 저장소에 쓰기 권한을 갖는 워크플로는 이것 하나뿐이고,
+# 마지막에 자기가 건드린 경로를 스스로 검증한 뒤에만 커밋한다.
+
+on:
+  push:
+    branches: [main]
+    paths: ['inbox/**']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: wap-import
+  cancel-in-progress: false
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 반입
+        run: |
+          set -o pipefail
+          python3 tools/wap_import.py 2>&1 | tee /tmp/import.log
+
+      # 반입에 성공했어도 결과물이 규칙을 어기면 커밋하지 않는다.
+      - name: 결과 검사
+        run: |
+          set -e
+          python3 tools/guard.py --all
+          python3 tools/check_registry.py
+          n=0
+          for f in scripts/*.user.js; do
+            [ -e "$f" ] || continue
+            node --check "$f"; n=$((n+1))
+          done
+          echo "구문 검사한 스크립트: ${n}개"
+
+      - name: 봇 커밋
+        run: |
+          set -e
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "바뀐 것이 없습니다."; exit 0
+          fi
+
+          # 허용된 경로 밖을 만졌으면 실패시킨다.
+          # 이름 변경(A -> B)은 양쪽 경로를 각각 검사한다.
+          bad=$(git status --porcelain | sed 's/^...//' | sed 's/ -> /\n/' \
+                | grep -Ev '^(inbox/|scripts/|state/|contracts/scripts\.yaml)$|^(inbox|scripts|state)/' || true)
+          if [ -n "$bad" ]; then
+            echo "::error::허용되지 않은 경로를 변경했습니다:"; echo "$bad"; exit 1
+          fi
+
+          { echo "chore(import): 반입 정규화"; echo; head -c 3000 /tmp/import.log; } > /tmp/msg.txt
+
+          git config user.name  "wap-import[bot]"
+          git config user.email "wap-import@users.noreply.github.com"
+          git add -A
+          git commit -F /tmp/msg.txt
+          git push

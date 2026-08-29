@@ -282,19 +282,18 @@ desktop.ini
 *.orig
 
 # 예외: 익명화된 테스트 데이터만 허용
-!tests/fixtures/sanitized/**
+!/contracts/fixtures/**
 
-# ── 새 구조에서 반드시 커밋돼야 하는 경로 (위 규칙에 가리지 않도록 명시) ──
-# corpus/ 는 법령 조문 텍스트, lib/ 는 공유 코드 원본, twin/screens/ 는 마스킹된 화면 골격.
-!/lib/
-!/lib/**
-!/corpus/
-!/corpus/**
-!/twin/screens/
-!/twin/screens/**
+# ── 최상위 폴더는 8개다. 위 규칙(Python 템플릿 상속분)에 가리지 않도록 명시한다. ──
+!/contracts/
+!/contracts/**
+!/scripts/
+!/scripts/**
 !/state/
 !/state/**
+!/manual/
+!/manual/**
 
 # 개인정보가 들어 있는 원본은 어떤 경우에도 커밋하지 않는다.
-/twin/raw/
-/recon/raw/
+# 정찰기 원본·화면 덤프는 여기로만 들어오고, 마스킹을 통과한 것만 contracts/screens/ 로 간다.
+/state/_raw/

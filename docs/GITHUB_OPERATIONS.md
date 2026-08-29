@@ -134,8 +134,8 @@ localStorage.removeItem('wap.kill')     // 해제
 # 특정 스크립트만 정상 시점으로
 git checkout <태그> -- scripts/<slug>.user.js
 
-# 반입 이전 원본
-ls archive/
+# 반입 이력 (모든 반입본이 여기 있다)
+git log --oneline -- scripts/<slug>.user.js
 
 # 방금 merge한 PR 되돌리기 → GitHub PR 화면의 Revert
 ```

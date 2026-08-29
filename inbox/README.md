@@ -10,7 +10,7 @@ inbox/ 에 넣고 커밋
       ↓
 봇: slug 판정 → 헤더 정규화 → 프리앰블 주입 → 검사 → 색인 갱신
       ↓
-scripts/<slug>.user.js 로 커밋 · 원본은 archive/ 에 보관 · inbox/ 는 비워짐
+scripts/<slug>.user.js 로 커밋 · inbox/ 는 비워짐 (원본은 git 이력에 남는다)
       ↓
 그 파일을 Tampermonkey 편집기에서 덮어쓴다
 ```
@@ -27,3 +27,25 @@ scripts/<slug>.user.js 로 커밋 · 원본은 archive/ 에 보관 · inbox/ 는
 
 먼저 `contracts/scripts.yaml`에 새 slug를 등록하고(합병이면 `supersedes:`) **그 다음에** AI에게 시킨다.
 순서를 뒤집으면 돌아온 파일들이 같은 자리를 놓고 다툰다.
+
+## 로컬에서 직접 돌려보기
+
+GitHub Action을 기다리지 않고 손으로 돌려도 된다.
+
+```bash
+python3 tools/wap_import.py --check   # 무엇을 할지만 보여준다
+python3 tools/wap_import.py           # 실제로 옮긴다
+```
+
+`--check` 는 파일을 건드리지 않는다. 처음 몇 번은 이걸로 확인하고 넣는 것을 권한다.
+
+## 실패하면 어떻게 되는가
+
+**아무것도 쓰지 않고 파일을 여기 그대로 둔다.** 반쯤 처리된 상태를 만들지 않는다.
+
+| 메시지 | 뜻 |
+|---|---|
+| `판정 실패` | `contracts/scripts.yaml` 에 없는 스크립트다. 먼저 등록하세요 |
+| `slug … 를 주장하는 파일이 N개` | 쪼개거나 합치는 중이다. 새 slug 를 먼저 등록하세요 |
+| `헤더 블록을 하나로 특정할 수 없습니다` | 붙여넣다가 파일이 잘렸을 가능성이 크다 |
+| `본문 바이트가 보존되지 않았습니다` | 봇 쪽 결함이다. 그대로 두고 알려주세요 |

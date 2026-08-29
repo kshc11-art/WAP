@@ -60,7 +60,7 @@
 4. 구현한다.
 5. 계약(`contracts/`)을 바꿨으면 `confidence`와 `verifiedAt`을 갱신한다.
    **모순은 해결하려 하지 말고 `conflict`로 드러내라.**
-6. 판정·계산 로직을 건드렸으면 `tests/fixtures/sanitized/`의 익명 데이터로 테스트를 붙인다.
+6. 판정·계산 로직을 건드렸으면 `contracts/fixtures/`의 익명 데이터로 테스트를 붙인다.
 7. commit → push → PR.
 
 ---
