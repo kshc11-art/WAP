@@ -28,6 +28,9 @@ jobs:
           set -o pipefail
           python3 tools/wap_import.py 2>&1 | tee /tmp/import.log
 
+      - name: 색인·지시서 재생성
+        run: python3 tools/wap_state.py
+
       # 반입에 성공했어도 결과물이 규칙을 어기면 커밋하지 않는다.
       - name: 결과 검사
         run: |

@@ -9,6 +9,7 @@ slug는 [`contracts/scripts.yaml`](../contracts/scripts.yaml)이 정한다 —
 ## 고치고 싶으면
 
 1. `state/brief/<slug>.md` + 이 폴더의 `<slug>.user.js` 를 AI에 붙여넣는다
+   (지시서는 `python3 tools/wap_state.py` 가 만든다. 반입할 때마다 자동으로 갱신된다)
 2. 받은 파일 전문을 [`inbox/`](../inbox/)에 넣고 커밋한다
 3. 봇이 정리해서 이 폴더로 돌려준다
 4. 그걸 **Tampermonkey 편집기에서 덮어쓴다** ("새 스크립트 설치" 금지)
