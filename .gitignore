@@ -8,19 +8,19 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
+/python/**/build/
+/python/**/develop-eggs/
+/python/**/dist/
+/python/**/downloads/
+/python/**/eggs/
 .eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
+/python/**/lib/
+/python/**/lib64/
+/python/**/parts/
+/python/**/sdist/
+/python/**/var/
+/python/**/wheels/
+/python/**/share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
@@ -49,7 +49,7 @@ coverage.xml
 *.py.cover
 .hypothesis/
 .pytest_cache/
-cover/
+/python/**/cover/
 
 # Translations
 *.mo
@@ -62,18 +62,18 @@ db.sqlite3
 db.sqlite3-journal
 
 # Flask stuff:
-instance/
+/python/**/instance/
 .webassets-cache
 
 # Scrapy stuff:
 .scrapy
 
 # Sphinx documentation
-docs/_build/
+/python/docs/_build/
 
 # PyBuilder
 .pybuilder/
-target/
+/python/**/target/
 
 # Jupyter Notebook
 .ipynb_checkpoints
@@ -165,7 +165,7 @@ venv.bak/
 .ropeproject
 
 # mkdocs documentation
-/site
+/python/site
 
 # mypy
 .mypy_cache/
@@ -283,3 +283,18 @@ desktop.ini
 
 # 예외: 익명화된 테스트 데이터만 허용
 !tests/fixtures/sanitized/**
+
+# ── 새 구조에서 반드시 커밋돼야 하는 경로 (위 규칙에 가리지 않도록 명시) ──
+# corpus/ 는 법령 조문 텍스트, lib/ 는 공유 코드 원본, twin/screens/ 는 마스킹된 화면 골격.
+!/lib/
+!/lib/**
+!/corpus/
+!/corpus/**
+!/twin/screens/
+!/twin/screens/**
+!/state/
+!/state/**
+
+# 개인정보가 들어 있는 원본은 어떤 경우에도 커밋하지 않는다.
+/twin/raw/
+/recon/raw/

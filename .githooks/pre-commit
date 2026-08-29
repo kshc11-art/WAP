@@ -1,28 +1,25 @@
 #!/usr/bin/env bash
 # 활성화: git config core.hooksPath .githooks
+#
+# 주의: 이 훅은 로컬 git 커밋에서만 돈다. GitHub 웹 UI에서 직접 커밋하면
+# 실행되지 않으므로, 같은 검사가 .github/workflows/checks.yml 에도 있어야 한다.
 set -uo pipefail
+ROOT="$(git rev-parse --show-toplevel)"
 
-mapfile -t STAGED < <(git diff --cached --name-only --diff-filter=ACM)
+mapfile -d '' -t STAGED < <(git -c core.quotePath=false diff --cached -z --name-only --diff-filter=ACM)
 [ "${#STAGED[@]}" -eq 0 ] && exit 0
 
-ROOT="$(git rev-parse --show-toplevel)"
-if [ -x "$ROOT/tools/guard.sh" ]; then
-  "$ROOT/tools/guard.sh" "${STAGED[@]}" || {
-    echo
-    echo "커밋을 중단했습니다."
-    exit 1
-  }
-fi
+"$ROOT/tools/guard.sh" "${STAGED[@]}" || { echo; echo "커밋을 중단했습니다."; exit 1; }
 
-# userscript 구문 검사 (node가 있을 때만)
+# userscript 구문 검사. node 가 없으면 조용히 건너뛰지 않고 그 사실을 알린다.
 if command -v node >/dev/null 2>&1; then
   for f in "${STAGED[@]}"; do
     case "$f" in
-      *.user.js|*.js)
-        [ -f "$f" ] || continue
-        node --check "$f" || { echo "구문 오류: $f"; exit 1; }
-        ;;
+      *.js) [ -f "$ROOT/$f" ] || continue
+            node --check "$ROOT/$f" || { echo "구문 오류: $f"; exit 1; } ;;
     esac
   done
+else
+  echo "알림: node 가 없어 구문 검사를 건너뜁니다. CI 에서 검사됩니다."
 fi
 exit 0
