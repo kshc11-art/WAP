@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# 활성화: git config core.hooksPath .githooks
+set -uo pipefail
+
+mapfile -t STAGED < <(git diff --cached --name-only --diff-filter=ACM)
+[ "${#STAGED[@]}" -eq 0 ] && exit 0
+
+ROOT="$(git rev-parse --show-toplevel)"
+if [ -x "$ROOT/tools/guard.sh" ]; then
+  "$ROOT/tools/guard.sh" "${STAGED[@]}" || {
+    echo
+    echo "커밋을 중단했습니다."
+    exit 1
+  }
+fi
+
+# userscript 구문 검사 (node가 있을 때만)
+if command -v node >/dev/null 2>&1; then
+  for f in "${STAGED[@]}"; do
+    case "$f" in
+      *.user.js|*.js)
+        [ -f "$f" ] || continue
+        node --check "$f" || { echo "구문 오류: $f"; exit 1; }
+        ;;
+    esac
+  done
+fi
+exit 0

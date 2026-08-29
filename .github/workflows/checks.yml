@@ -1,0 +1,32 @@
+name: checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 업무데이터·인증정보 스캔
+        run: bash tools/guard.sh --all
+
+      - name: userscript 구문 검사
+        run: |
+          shopt -s nullglob globstar
+          files=(userscripts/**/*.js)
+          if [ ${#files[@]} -eq 0 ]; then echo "검사할 userscript 없음"; exit 0; fi
+          for f in "${files[@]}"; do
+            echo "· $f"
+            node --check "$f"
+          done
+
+      - name: Python 구문 검사
+        run: |
+          shopt -s nullglob globstar
+          files=(python/**/*.py)
+          if [ ${#files[@]} -eq 0 ]; then echo "검사할 Python 파일 없음"; exit 0; fi
+          python3 -m compileall -q python

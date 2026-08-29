@@ -1,0 +1,62 @@
+name: 기능 요청
+description: 새 기능 / 기존 기능 개선
+labels: ["feature"]
+body:
+  - type: textarea
+    id: purpose
+    attributes:
+      label: 목적
+      description: 이 기능으로 무엇을 하고 싶은가
+      placeholder: 포털에 들어가자마자 오늘 처리할 업무요청을 바로 보고 싶다
+    validations:
+      required: true
+  - type: textarea
+    id: current
+    attributes:
+      label: 현황
+      description: 지금은 어떻게 하고 있는가
+      placeholder: IPMS 업무요청 탭을 직접 열어서 하나씩 확인
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: 문제점
+      description: 지금 방식의 무엇이 불편하거나 위험한가
+      placeholder: 기한 초과 건을 놓칠 수 있음. 탭을 안 열면 모름
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 기대효과
+      placeholder: 포털 접속만으로 오늘 할 일 파악. 하루 10분 절감
+    validations:
+      required: true
+  - type: textarea
+    id: detail
+    attributes:
+      label: 세부자료
+      description: |
+        참고할 화면, 데이터 형태, 판정 기준 등.
+        ⚠️ 실제 개인정보·특허번호·금액은 적지 마세요. 익명화해서 적습니다.
+      placeholder: |
+        - 대상 화면: 업무요청 목록
+        - 판정: 기한 필드가 오늘보다 이전이고 상태가 '검토중'이면 초과
+        - 샘플: tests/fixtures/sanitized/ 참조
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: 대상
+      options:
+        - label: Tampermonkey (userscript)
+        - label: Python
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: 확인
+      options:
+        - label: 조회(read)만으로 구현 가능하다 / 쓰기 API가 필요하면 아래에 이유를 적었다
+          required: true
+        - label: 이 Issue 본문에 실제 업무 데이터를 넣지 않았다
+          required: true
