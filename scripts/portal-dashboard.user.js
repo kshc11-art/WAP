@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         [KRISS Portal] 업무 대시보드
 // @namespace    kriss.krisstar.tools
-// @version      1.26.2
+// @version      1.26.3
 // @description  포털 메인 통합 업무 대시보드. IPMS 단계와 나의업무(BPM)를 연결하고, 소스별 폴백·자동 재조회로 목록을 최신으로 유지. 긴급복구 Alt+Shift+X
 // @match        https://krisstar.kriss.re.kr/index.do*
 // @match        https://krisstar.kriss.re.kr/
@@ -13,7 +13,9 @@
 // @run-at       document-idle
 // ==/UserScript==
 
-/* v1.26.2: 기관별 소유지분 및 신청번호 기준 PPS 단건 조회로 생성 전 확인. */
+/* v1.26.3: 출원지시전 보강 조회, 현재 PPS 완료·확인된 비대상 출원지시 표시,
+ * 사무소 제출 최종확인·출원결과 검토 분리. 첨부 출원관리 화면 계약과 합성 회귀 검증.
+ * 내부망 실제 실행 및 팝업 처리 완료는 별도 확인 필요. */
 
 /*
  * v1.26.1 (2026-09-08) — 신청완료 후속을 선행조사로 분류, 공통 대상 규칙,
@@ -1283,7 +1285,7 @@
     debug: 'pd_debug_v1',      // 원문 응답은 이 값이 true일 때만 콘솔에 노출
     who: 'pd_who_v1',          // v1.25.3: 주발명자·특허사무소 표시 여부(기본 true)
     fgnfile: 'pd_fgnfile_v1',  // v1.25.9: 국외 신청의 출원지시 대기 표시 여부(기본 true)
-    cache: 'pd_cache_v41',     // v1.25.10: 후보키·묶음 키 변경(오연결된 구캐시 폐기). v38: 묶음·정렬 밴드 / v37: 소스별 폴백
+    cache: 'pd_cache_v42',     // v1.26.3: 출원지시·제출 확인 재분류 — 이전 판정 캐시 폐기
   };
   // v1.22.0: 키보드 내비·연속 열기 상태
   const PD_KB = { last: null, focusPending: null };
@@ -1297,7 +1299,7 @@
   //   ⚠️ 탭마다 코드체계가 완전히 다름 — 반드시 단계별로 조회할 것(공통 매핑 금지).
   const APV_STAT = {
     task: { '00': '임시저장', '01': '신청', '02': '접수', '03': '검토중', '04': '확인대기', '05': '완료' },
-    file: { '10': '출원지시전', '01': '출원지시', '02': '접수', '03': '처리중', '04': '제출', '05': '출원검토', '09': '완료' },
+    file: { '10': '출원지시전', '01': '출원지시', '02': '접수', '03': '처리중', '04': '제출', '05': '출원검토', '06': '출원검토', '07': '출원검토', '08': '출원검토', '09': '완료' },
     exp: { '01': '접수대기', '02': '접수', '03': '검토준비중', '04': '검토중', '07': '검토중', '08': '과제책임자', '09': '계산서발행대기(사무소)', '10': '지출발의대기', '11': '완료' },
     // reg: 드롭다운(01 결정보고제출…10 완료)과 행실측(01 접수대기중/07·12 완료)이 상충 → 사전 미사용, 판별은 행실측 기준.
   };
@@ -1417,9 +1419,11 @@
     // No inferred application date or deadline: those can belong to another workflow.
     if(!date){
       const workDate=pdCalendarDate(a.myWork && a.myWork.requestDate);
-      return workDate ? pdInWorkPeriod({requestDate:workDate},now) : true;
+      return workDate ? pdInWorkPeriod({requestDate:workDate,stage:a.stage,track:a.track,baseTrack:a.baseTrack},now) : true;
     }
     const n=now || new Date();
+    // 미완료 출원 처리건은 과거 신청/지시일 때문에 숨기지 않는다. 미래일은 계속 제외.
+    if(a.stage==='file' && (a.track || a.baseTrack)==='action') return date<=fmtYmd8(n);
     return date>=fmtYmd8(shiftMonthsClamped(n,-periodMonths)) && date<=fmtYmd8(n);
   }
   function pdScopedActions() { return ((MODEL && MODEL.acts) || []).filter((a)=>pdInWorkPeriod(a)); }
@@ -1567,7 +1571,7 @@
    * 등록·선행조사는 BPM이 없다 — 연결하지 않고 안전망(BPM 직접)에 맡긴다. */
   const STAGE_MATCH_KEYS = {
     apply: ['intellRqstNo'],
-    file: [], // B_RES00011 bizKey 계약 미확정: BPM 직접 행으로 유지
+    file: ['aplyRsltRqstNo'], // 출원관리 화면: 결과검토 BPM의 bizKey (출원지시번호와 별도)
     task: ['bpmRqstNo'],
     exp: ['cnfRqstNo'],
     reg: [],
@@ -1690,7 +1694,7 @@
     const byBpm = new Map();
     let cand = 0;
     (acts || []).forEach((a) => {
-      if (a.routeKind) return;
+      if (a.routeKind && a.routeKind !== 'fileResultReview') return;
       const hit = bestMyWorkFor(a);
       if (!hit) return;
       cand++;
@@ -1798,7 +1802,7 @@
     if (!d || typeof d !== 'object' || Array.isArray(d) || String(d.intellRqstNo || '') !== key || d.apvStat == null || res.success === false || res.error) throw Error('신청 상세 응답 불일치');
     // Explicitly clear older UI evidence before any merge with a cached/list row.
     var row = Object.assign({},d,{apvStatNm:String(d.apvStatNm || ''),__krissOwnerEvidence:null,__krissOwnerError:'',__krissPpsChecked:false,__krissPpsRecord:null,__krissPpsError:''});
-    if (String(d.apvStat).padStart(2,'0') !== '04' || String(d.ppsRqstNo || '').trim()) return row;
+    if (String(d.apvStat).padStart(2,'0') !== '04' || pdPpsNumber(d.ppsRqstNo)) return row;
     var result = await Promise.allSettled([
       request('POST','/pms/res/intellppty/searchIntellOwr.json',{intellRqstNo:key}),
       request('GET','/pms/iprs/mng/selectPpsRqst.json',{intellRqstNo:key})
@@ -1822,7 +1826,7 @@
     var apv = val('apvStat').padStart(2, '0');
     if (apv !== '04') return {kind:'skip', reason:'지식재산권 신청 결재완료 전 (' + (val('apvStat') || '미확인') + ')'};
     if (/임시|내부결재|반려|취소|철회/.test(val('apvStatNm'))) return {kind:'hold', reason:'결재상태 코드·명칭 불일치'};
-    if (val('ppsRqstNo') || val('ppsRqstDt')) return {kind:'linked', reason:'기존 선행조사 요청 있음 · 새로 생성하지 않고 기존 요청 확인'};
+    if (pdPpsNumber(r.ppsRqstNo) || val('ppsRqstDt')) return {kind:'linked', reason:'기존 선행조사 요청 있음 · 새로 생성하지 않고 기존 요청 확인'};
     if (r.__krissOwnerEvidence && r.__krissOwnerEvidence.externalMajority) {
       var owner = r.__krissOwnerEvidence.externalMajority;
       return {kind:'exclude',reason:'선행조사 예외 · ' + owner.orgNm + ' 소유지분 ' + owner.owrQuota + '% (한 기관 50% 초과)'};
@@ -1841,6 +1845,30 @@
     if (!r.__krissOwnerEvidence) return {kind:'hold',reason:'기관별 소유지분 확인 필요' + (r.__krissOwnerError ? ' · ' + r.__krissOwnerError : '')};
     if (r.__krissPpsChecked !== true) return {kind:'hold',reason:'기존 선행조사 확인 필요' + (r.__krissPpsError ? ' · ' + r.__krissPpsError : '')};
     return {kind:'target', reason:'신청 결재완료 · 국내 일반출원 · 선행조사 미의뢰'};
+  }
+
+  // 표시용 빈값 문구는 요청번호도, 선행조사 비대상 증거도 아니다.
+  function pdPpsNumber(value) {
+    const s=String(value == null ? '' : value).trim();
+    return /^(?:-|없음|미의뢰|의뢰하지\s*않음|null|undefined)$/i.test(s) ? '' : s;
+  }
+  // 출원관리 화면의 세 상태를 분리: 전체 / 지시 / 결과검토.
+  function pdFilingReview(r) {
+    const overall=status2(r.apvStat), instruction=status2(r.rqstApvStat), result=status2(r.aplyRsltApvStat);
+    if(result==='03') return {kind:'done',label:''};
+    if(instruction==='04' || (!instruction && overall==='04'))
+      return {kind:'confirmation',label:'특허법인 출원 제출 → 최종확인'};
+    if(['05','06','07','08','09'].includes(instruction)) {
+      if(!String(r.aplyRsltRqstDt || '').trim()) return {kind:'resultReview',label:'출원결과 검토 실행 필요'};
+      if(result==='00') return {kind:'resultReview',label:'출원결과 검토 작성 계속'};
+      return {kind:'progress',label:'출원결과 검토 진행중'};
+    }
+    const labels={'01':'출원지시 완료 (사무소 출원 진행)','02':'출원 접수 (사무소)','03':'출원 처리중 (사무소)',
+      '05':'출원결과 검토 진행중','06':'출원결과 검토 진행중','07':'출원결과 검토 진행중','08':'출원결과 검토 진행중'};
+    return {kind:labels[overall] ? 'progress' : 'done',label:labels[overall] || ''};
+  }
+  function pdFilingActionDate(r) {
+    return firstVal(r,['aplyRsltRqstDt','cmplDt','rqstDt','aplyRqstDt']) || '';
   }
 
   function pdPpsContextRequest(method,url,params,signal) {
@@ -1882,7 +1910,7 @@
     if (!Array.isArray(rows) || !rows.length) return;
     const cand = rows.filter((r) =>
       status2(r && r.apvStat) === '04' &&
-      !String(r.ppsRqstNo || '').trim() && r.intellRqstNo
+      !pdPpsNumber(r.ppsRqstNo) && r.intellRqstNo
     );
     if (!cand.length) return;
 
@@ -2056,7 +2084,7 @@
       let resp = await httpPost(src.url, firstBody, signal); out.status = resp.status;
       let d; try { d = JSON.parse(resp.text); } catch (e) { throw new Error('JSON 아님(세션/응답 확인)'); }
       let ex = extractRows(d); let total = readTotal(d); out.from = firstBody.rqstStrDt || '';
-      if (src.dateFallback && ex.rows && ex.rows.length === 0) {
+      if (src.dateFallback && ex.rows && ex.rows.length === 0 && !(extraBody && extraBody.rqstStrDt==='' && extraBody.rqstEndDt==='')) {
         includeSourceExtra = false;
         resp = await httpPost(src.url, makeBody(size, includeSourceExtra), signal); out.status = resp.status;
         d = JSON.parse(resp.text); ex = extractRows(d); total = readTotal(d); out.from = 'FULL(폴백)';
@@ -2077,6 +2105,59 @@
       if ((out.err || gmGet(K.debug, false)) && resp) out.raw = String(resp.text || '').slice(0, 600);
     } catch (e) { out.err = String(e && e.message || e); }
     out.ms = Date.now() - t0; DIAG.push(out); return out;
+  }
+
+  // 출원지시전 행이 신청목록 기간 밖에 있어도 신청 결재상태를 별도로 확인한다.
+  // 출원 전체상태10을 신청 결재완료04로 치환하지 않는다.
+  async function enrichFilingParents(R, ctx) {
+    const parents=new Map(((R.apply && R.apply.rows) || []).map(r=>[String(r.intellRqstNo || ''),r]));
+    const rows=((R.file && R.file.rows) || []).filter(r=>status2(r.apvStat)==='10' && r.intellRqstNo);
+    let next=0;
+    await Promise.all(new Array(Math.min(3,rows.length)).fill(0).map(async()=>{
+      while(next<rows.length) {
+        const r=rows[next++], key=String(r.intellRqstNo);
+        r.__pdApplication=null; r.__pdApplicationError='';
+        if(ctx && !RUNTIME.isCurrent(ctx)) return;
+        if(parents.has(key) && !(R.apply && R.apply.stale)) { r.__pdApplication=parents.get(key); continue; }
+        // 목록에서 현재 조사가 미완료임을 확인한 행은 추가 신청 상세 조회가 필요 없다.
+        const no=pdPpsNumber(r.ppsRqstNo);
+        const exact=((R.pps && !R.pps.stale && R.pps.rows) || []).filter(p=>no && pdPpsNumber(p.rqstNo || p.ppsRqstNo)===no);
+        if(exact.length && exact.some(p=>status2(p.apvStat)!=='04')) continue;
+        try {
+          let parent=APPLY_DETAIL_CACHE.get(key);
+          if(!parent) parent=await krissReadPpsContext(key,(method,url,params)=>pdPpsContextRequest(method,url,params,ctx && ctx.signal),()=>!ctx || RUNTIME.isCurrent(ctx));
+          r.__pdApplication=parent; parents.set(key,parent);
+        } catch(e) {r.__pdApplicationError=String(e && e.message || e);}
+      }
+    }));
+  }
+
+  async function enrichFilingPps(R,ctx) {
+    const candidates=((R.apply && !R.apply.stale && R.apply.rows) || []).concat(
+      ((R.file && !R.file.stale && R.file.rows) || []).filter(r=>status2(r.apvStat)==='10').map(r=>r.__pdApplication).filter(Boolean));
+    const requests=new Map();
+    candidates.forEach(r=>{
+      const no=pdPpsNumber(r.ppsRqstNo), key=String(r.intellRqstNo || '');
+      if(!no || !key || status2(r.apvStat)!=='04' || r.aplyRqstDt) return;
+      const exact=((R.pps && !R.pps.stale && R.pps.rows) || []).some(p=>pdPpsNumber(p.rqstNo || p.ppsRqstNo)===no);
+      if(exact || r.__krissPpsRecord) return;
+      const id=JSON.stringify([key,no]);
+      if(!requests.has(id)) requests.set(id,{key,no,rows:[]});
+      requests.get(id).rows.push(r);
+    });
+    const jobs=Array.from(requests.values());let next=0;
+    await Promise.all(new Array(Math.min(3,jobs.length)).fill(0).map(async()=>{
+      while(next<jobs.length) {
+        const job=jobs[next++];
+        if(ctx && !RUNTIME.isCurrent(ctx)) return;
+        try {
+          const res=await pdPpsContextRequest('GET','/pms/iprs/pps/selectPpsRqst.json',{rqstNo:job.no},ctx && ctx.signal);
+          const record=krissPpsRecord(res,job.key);
+          if(!record || pdPpsNumber(record.rqstNo)!==job.no) throw Error('선행조사 번호 확인 필요');
+          job.rows.forEach(r=>{r.__krissPpsRecord=record;});
+        } catch(e) {job.rows.forEach(r=>{r.__krissPpsError=String(e && e.message || e);});}
+      }
+    }));
   }
 
   async function buildActions(R, carry) {
@@ -2104,6 +2185,10 @@
         cmplRqstNo: r.intellRegCmplRqstNo || r.cmplRqstNo, // 등록완료 요청번호 — v1.16.0: 실측 필드 intellRegCmplRqstNo 우선
         bpmRqstNo: r.bpmRqstNo,                     // BPM 요청번호(업무요청 B_RES00012 등)
         ppsRqstNo: r.ppsRqstNo,
+        aplyRsltRqstNo: r.aplyRsltRqstNo,
+        aplyRsltRqstDt: r.aplyRsltRqstDt,
+        fileResultStat: status2(r.aplyRsltApvStat),
+        fileRqstStat: status2(r.rqstApvStat),
         mainIven: String(firstVal(r, F.mainIven) || '').trim(),   // v1.25.3: 주발명자(목록 응답에 있을 때만)
         office: String(firstVal(r, F.office) || '').trim(),       // v1.25.3: 특허사무소(busiRegNm → plfNm)
         reRqstType: r.__pdReRqstType || r.reRqstType || '',
@@ -2119,12 +2204,8 @@
       acts.push(item);
       return item;
     };
-    /* ── v1.18.2 선행조사 완료 게이트 ─────────────────────────────
-     * 출원지시는 선행조사 완료가 선행조건. 기존엔 ppsRqstDt(요청일) 존재만으로 '출원지시 대기(action)'를
-     * 만들어, 선행조사 진행중(=출원지시전) 건이 처리할 업무에 올라오는 오탐이 있었다.
-     * 판정 순위: ① 신청행 자체 완료신호 ② pps 목록 대조(apvStat 04=완료) ③ 판정불가 → 기존 동작 유지.
-     * 제외된 건은 pps 단계 progress('선행조사 진행·회신 대기')에 이미 표시되므로 가시성 손실 없음.
-     * ─────────────────────────────────────────────────────────── */
+    // 현재 연결된 조사 단건/번호 대조의 완료04 또는 확인된 조사 예외만 출원지시로 전환.
+    // 미의뢰·조사중·연결불명은 출원지시로 올리지 않는다. 전체 이력 색인은 진단용이다.
     const PG = {};   // 게이트 사유별 건수(콘솔 진단)
     const PPSD = ppsDraftLedger();   // v1.22.1: Helper 선행조사 미제출 원장
     const PPS_IDX = { ready: false, linked: false, byRqst: new Map(), byMng: new Map() };
@@ -2168,35 +2249,58 @@
         if (f0[F.mngNo]) FILE_IDX.byMng.add(String(f0[F.mngNo]));
       });
     }
-    const fileExists = (r) => (r[F.rqstNo] && FILE_IDX.byRqst.has(String(r[F.rqstNo]))) || (r[F.mngNo] && FILE_IDX.byMng.has(String(r[F.mngNo])));
+    const fileExists = (r) => r[F.rqstNo] ? FILE_IDX.byRqst.has(String(r[F.rqstNo])) : (r[F.mngNo] && FILE_IDX.byMng.has(String(r[F.mngNo])));
     function ppsGate(r) {
-      const no = String(r.ppsRqstNo || '').trim();
-      const exact = ((R.pps && !R.pps.stale && R.pps.rows) || []).filter((p) => no && String(p.rqstNo || p.ppsRqstNo || '').trim()===no);
-      if (exact.length && exact.some((p) => status2(p.apvStat)!=='04')) return {pass:false,verified:true,why:'현재조사미완료'};
-      if (R.pps && R.pps.stale) return {pass:false,verified:false,why:'선행조사조회오래됨'};
-      // ① 신청행 자체 완료 신호(응답에 있으면 자동 적용)
-      const selfDoneDt = firstVal(r, ['ppsCmplDt', 'ppsEndDt']);
-      if (selfDoneDt && !r.ppsApvStat) return { pass: true, verified: true, why: 'row완료일', doneDt: selfDoneDt };
-      const selfSt = firstVal(r, ['ppsApvStat']);
-      if (selfSt != null && selfSt !== '') {
-        const s = status2(selfSt);
-        return (s === '04')
-          ? { pass: true, verified: true, why: 'row상태완료' }
-          : { pass: false, verified: true, why: 'row상태미완료' };
+      const no=pdPpsNumber(r.ppsRqstNo), key=String(r.intellRqstNo || '');
+      const result=(rows,why)=>({pass:rows.length>0 && rows.every(p=>status2(p.apvStat)==='04'),verified:true,why,
+        doneDt:rows.map(p=>firstVal(p,['cmplDt','ppsCmplDt','ppsEndDt']) || '').sort().pop() || ''});
+      const direct=r.__krissPpsRecord;
+      if(direct && no) {
+        if(pdPpsNumber(direct.rqstNo)!==no || (direct.intellRqstNo && String(direct.intellRqstNo)!==key))
+          return {pass:false,verified:false,why:'단건조사연결불일치'};
+        const conflict=((R.pps && !R.pps.stale && R.pps.rows) || []).some(p=>pdPpsNumber(p.rqstNo || p.ppsRqstNo)===no && (status2(p.apvStat)!==status2(direct.apvStat) || (p.intellRqstNo && String(p.intellRqstNo)!==key)));
+        if(conflict) return {pass:false,verified:false,why:'단건목록조사상태충돌'};
+        return result([direct],'현재조사단건');
       }
-      // ② pps 목록 대조
-      if (!(PPS_IDX.ready && PPS_IDX.linked)) return { pass: false, verified: false, why: '판정불가' };
-      const hit = (r[F.rqstNo] && PPS_IDX.byRqst.get(String(r[F.rqstNo])))
-        || (r[F.mngNo] && PPS_IDX.byMng.get(String(r[F.mngNo]))) || null;
-      if (!hit) return { pass: false, verified: true, why: 'pps행없음' };
-      if (CONF.PPS_DONE_STRICT) {
-        return (hit.open === 0 && hit.done > 0)
-          ? { pass: true, verified: true, why: 'pps전건완료', doneDt: hit.doneDt || '' }
-          : { pass: false, verified: true, why: 'pps미완료잔존' };
+      const fresh=R.pps && !R.pps.stale && Array.isArray(R.pps.rows);
+      const exact=fresh ? R.pps.rows.filter(p=>no && pdPpsNumber(p.rqstNo || p.ppsRqstNo)===no) : [];
+      if(exact.length) {
+        if(exact.some(p=>p.intellRqstNo && String(p.intellRqstNo)!==key)) return {pass:false,verified:false,why:'조사신청번호불일치'};
+        return result(exact,'현재조사목록');
       }
-      return (hit.done > 0)
-        ? { pass: true, verified: true, why: 'pps완료1건이상', doneDt: hit.doneDt || '' }
-        : { pass: false, verified: true, why: 'pps미완료' };
+      if(r.ppsApvStat != null && String(r.ppsApvStat).trim())
+        return {pass:status2(r.ppsApvStat)==='04',verified:true,why:'신청행조사상태',doneDt:firstVal(r,['ppsCmplDt','ppsEndDt']) || ''};
+      // 현재 번호가 있으면 다른 과거 조사의 완료로 대체하지 않는다.
+      if(no || !fresh) return {pass:false,verified:false,why:'현재조사상태확인필요'};
+      return {pass:false,verified:false,why:'현재조사연결확인필요'};
+    }
+    const instructionKeys=new Set();
+    const pendingFile=((R.file && R.file.rows) || []).filter(r=>status2(r.apvStat)==='10');
+    function addFileInstruction(parent, row, source) {
+      if(!parent || status2(parent.apvStat)!=='04' || parent[F.aplyReqDt] || fileExists(parent)) return false;
+      if(source==='apply') {
+        const listed=pendingFile.find(f=>String(f.intellRqstNo || '')===String(parent.intellRqstNo || ''));
+        if(listed) {row=listed;source='file';}
+      }
+      const current=Object.assign({},parent);
+      const fromFile=pdPpsNumber(row && row.ppsRqstNo);
+      if(fromFile && !pdPpsNumber(parent.ppsRqstNo) && parent.__krissPpsChecked===true && !parent.__krissPpsRecord) return false;
+      if(fromFile && !pdPpsNumber(current.ppsRqstNo)) current.ppsRqstNo=fromFile;
+      if(fromFile && pdPpsNumber(parent.ppsRqstNo) && fromFile!==pdPpsNumber(parent.ppsRqstNo)) return false;
+      const policy=krissPpsPolicy(current), g=ppsGate(current);
+      if(policy.kind==='skip' || policy.kind==='target' || /결재상태 코드/.test(policy.reason || '')) return false;
+      const related=((R.pps && R.pps.rows) || []).filter(p=>current.intellRqstNo && String(p.intellRqstNo || '')===String(current.intellRqstNo));
+      const linkedOpen=R.pps && !R.pps.stale && related.some(p=>status2(p.apvStat)!=='04');
+      const exempt=policy.kind==='exclude' && current.__krissPpsChecked===true && !current.__krissPpsRecord && !pdPpsNumber(current.ppsRqstNo) && !linkedOpen;
+      if(!exempt && !(g.pass && g.verified)) {PG[g.why]=(PG[g.why] || 0)+1;return false;}
+      const key=String(current.intellRqstNo || '');
+      if(!key || instructionKeys.has(key)) return false;
+      instructionKeys.add(key);
+      const workDate=g.doneDt || current.rqstDt || '';
+      push('file',row || current,exempt ? '선행조사 비대상 → 출원지시·메일' : '선행조사 완료 → 출원지시·메일',null,elapsedDays(workDate),undefined,'action',
+        {source,applicationDate:current.rqstDt || '',scopeDate:workDate,requestDate:workDate,routeKind:'fileInstruction',
+          intellRqstNo:key,ppsRqstNo:current.ppsRqstNo,filingRqstNo:source==='file' ? firstVal(row,F.stageRqstNo.file) : '',policyReason:exempt ? policy.reason : '현재 선행조사 완료'});
+      return true;
     }
 
     /* v1.25.3 ── 주발명자·특허사무소 보강 색인 ────────────────────────────
@@ -2280,11 +2384,8 @@
     //     · 철회 신청은 목록 응답에 별도 상태가 없어 apvStat=01로 남으므로(실측),
     //       오래된 01은 철회/장기정체 잔재로 보고 제외.
     //   00 임시저장=제외, 03 내부결재=진행중.
-    //   04(신청 완료) 이후 후속:
-    //     · 선행조사 미의뢰 — 선행조사 대상인 '일반출원(reRqstType=G)'에만 표시.
-    //       가출원(P)·분할(D)·후속(S)·유럽재등록(E)은 선행조사 대상 아님 → 제외.
-    //       ⚠️ reRqstType은 신청목록 그리드 컬럼에 없음 → 응답에 없으면 미표시(오탐 방지).
-    //     · 출원지시 대기 — 선행조사 완료 후 2주+ 미지시(ppsRqstDt 있고 aplyRqstDt 없음).
+    //   04 이후: 미의뢰 대상은 선행조사 요청, 현재 조사 완료/확인된 비대상은 즉시 출원지시.
+    //   출원종류만으로 예외를 추정하지 않고 정책 미확정은 확인 필요로 표시한다.
     try {
       if (R.apply.rows) {
         await __pdForEach(R.apply.rows, (r) => {
@@ -2303,7 +2404,11 @@
 
           const policy = krissPpsPolicy(r);
           const derived = {source:'apply', applicationDate:r.rqstDt || '', routeKind:'applyReview'};
-          if (policy.kind === 'exclude') { PG[policy.reason] = (PG[policy.reason] || 0) + 1; return; }
+          if(addFileInstruction(r,r,'apply')) return;
+          if (policy.kind === 'exclude') {
+            if(!r[F.aplyReqDt] && !fileExists(r)) push('pps',r,'선행조사 예외·연결정보 확인',null,elapsedDays(reptDt),undefined,'progress',derived);
+            return;
+          }
           if (policy.foreign) {
             if (!r[F.aplyReqDt] && !fileExists(r) && gmGet(K.fgnfile,true)) {
               push('file', r, '국외·PCT 출원지시 여부 확인', null, elapsedDays(reptDt), undefined, 'progress',
@@ -2311,7 +2416,7 @@
             }
             return;
           }
-          const ppsNo = String(r.ppsRqstNo || '').trim();
+          const ppsNo = pdPpsNumber(r.ppsRqstNo);
           const exactPps = ((R.pps && !R.pps.stale && R.pps.rows) || []).filter((p) => String(p.rqstNo || p.ppsRqstNo || '').trim() === ppsNo && ppsNo);
           const relatedPps = ((R.pps && R.pps.rows) || []).filter((p) => p.intellRqstNo && String(p.intellRqstNo) === String(r.intellRqstNo));
           if (!ppsNo) {
@@ -2341,16 +2446,8 @@
             return;
           }
 
-          // v1.21.0: 선행조사 완료가 확인되면 14일 경과를 기다리지 않고 즉시 출원지시 대상으로 올린다.
-          if (!r[F.aplyReqDt] && !fileExists(r)) {
-            const g = ppsGate(r);
-            PG[g.why] = (PG[g.why] || 0) + 1;
-            if (!g.pass || !g.verified) return;
-            const fileWorkDate = g.doneDt || (exactPps[0] && firstVal(exactPps[0],['cmplDt','ppsCmplDt','ppsEndDt'])) || r[F.ppsReqDt] || '';
-            const e2 = elapsedDays(fileWorkDate);
-            push('file', r, '선행조사 완료 → 출원지시·메일', null, e2, undefined, 'action',
-              { source:'apply', applicationDate:r.rqstDt || '', scopeDate:fileWorkDate, requestDate:fileWorkDate, routeKind: 'fileInstruction', ppsRqstNo: r.ppsRqstNo });
-          }
+          if(!r[F.aplyReqDt] && !fileExists(r) && !ppsGate(r).verified)
+            push('pps',r,'현재 선행조사 상태 확인 필요',null,elapsedDays(reptDt),undefined,'progress',derived);
         });
       } else notes.push('신청목록 조회 실패: ' + R.apply.err);
     } catch (e) { notes.push('신청 규칙 오류: ' + e.message); }
@@ -2382,18 +2479,27 @@
     } catch (e) { notes.push('선행조사 규칙 오류: ' + e.message); }
     await __pdYield();
 
-    // 출원(file): v1.17.1 — apvStat 드롭다운 공식정의 기준(rqstApvStat 혼용 제거).
-    //   10 출원지시전 / 01 출원지시 / 02 접수 / 03 처리중 / 04 제출 / 05 출원검토 / 09 완료.
-    //   · 10(출원지시전)은 대량이므로 출원탭 제외 — 신청목록발 '출원지시 대기'(좁힌 조건)로만 표시(폭주 방지).
-    //   · 01~05 = 진행중(사무소·특허청 작업 추적). 담당 처리(action)는 출원지시(신청목록발)뿐 → 전부 progress.
-    //   · 09 완료 제외. (rqstApvStat/aplyRsltApvStat 기반 판별은 미검증이라 보류 — 추후 결과보고 별도 반영)
+    // v1.26.3: 출원관리 화면의 확인 필요 조건과 세 가지 상태 사전을 반영.
     try {
       if (R.file.rows) {
-        const FILE_PMAP = { '01': '출원지시 완료 (사무소 출원 진행)', '02': '출원 접수 (사무소)', '03': '출원 처리중 (사무소)', '04': '출원 제출 (특허청)', '05': '출원 검토' };
         await __pdForEach(R.file.rows, (r) => {
-          const raw = r[F.apvStat]; const st = status2(raw);
-          const label = FILE_PMAP[st];   // 10·09·기타 → 미표시
-          if (label) push('file', r, label, null, elapsedDays(firstVal(r, F.fileReqDt)), undefined, 'progress');
+          if(status2(r.apvStat)==='10') {
+            if(instructionKeys.has(String(r.intellRqstNo || ''))) return;
+            const fileGate=ppsGate(r);
+            if(fileGate.verified && !fileGate.pass) return;
+            const parent=r.__pdApplication || ((R.apply && R.apply.rows) || []).find(x=>x.intellRqstNo && String(x.intellRqstNo)===String(r.intellRqstNo));
+            if(addFileInstruction(parent,r,'file')) return;
+            if(parent && (status2(parent.apvStat)!=='04' || parent.aplyRqstDt || fileExists(parent) || krissPpsPolicy(parent).kind==='target')) return;
+            if(!parent || !ppsGate(Object.assign({},parent,{ppsRqstNo:pdPpsNumber(r.ppsRqstNo) || parent.ppsRqstNo})).verified)
+              push('file',r,'출원지시 조건 확인 필요',null,null,undefined,'progress',{source:'file',policyReason:r.__pdApplicationError || '신청 결재·선행조사 대상/완료 확인'});
+            return;
+          }
+          const review=pdFilingReview(r);
+          if(review.kind==='done') return;
+          const routeKind=review.kind==='confirmation' ? 'fileConfirmation' : 'fileResultReview';
+          const actionDate=pdFilingActionDate(r);
+          push('file',r,review.label,null,elapsedDays(actionDate),undefined,review.kind==='progress' ? 'progress' : 'action',
+            {source:'file',routeKind:review.kind==='progress' && !r.aplyRsltRqstNo ? '' : routeKind,scopeDate:actionDate});
         });
       } else notes.push('출원 조회 실패: ' + R.file.err);
     } catch (e) { notes.push('출원 규칙 오류: ' + e.message); }
@@ -2771,7 +2877,7 @@
       '<div class="pd-menu-wrap"><button class="pdi" data-a="menu" aria-haspopup="true" aria-expanded="false" title="설정">⋯</button>' +
       '<div class="pd-menu" id="pd-menu" hidden>' +
       '<div class="pd-mh">조회</div>' +
-      '<div class="pd-period-row"><span>조회 기간</span><select id="pd-period">' +
+      '<div class="pd-period-row" title="미완료 출원 처리건은 기간과 관계없이 표시합니다."><span>조회 기간</span><select id="pd-period">' +
       [1, 2, 3, 6, 12].map((m) => '<option value="' + m + '"' + (m === periodMonths ? ' selected' : '') + '>' + m + '개월</option>').join('') +
       '</select></div>' +
       '<button class="pd-mi" data-a="purge">캐시 비우고 다시 불러오기</button>' +
@@ -3364,7 +3470,7 @@
     const cachedNow = !!(MODEL && MODEL.health && MODEL.health.cached);
     if (info) {
       const issues = (MODEL && MODEL.health && MODEL.health.issues) || [];
-      info.textContent = '최근 ' + periodMonths + '개월 조회'
+      info.textContent = '최근 ' + periodMonths + '개월 · 미완료 출원 포함'
         + (age != null ? ' · ' + (cachedNow ? '캐시 표시 ' : '') + (age <= 0 ? '방금 갱신' : age + '분 전 갱신') : '')
         + ' · 표시 ' + shown + '건' + (issues.length ? ' · ⚠ 데이터 경고 ' + issues.length : '');
       info.title = (cachedNow ? '지금 목록은 저장된 캐시입니다(서버 재조회분이 아님).\n설정 → 캐시 비우고 다시 불러오기\n' : '') + issues.join('\n');
@@ -3718,7 +3824,16 @@
         if(opt.chainToken!=null && (!CHAIN_RUN || opt.chainToken!==PD_CHAIN.token))return false;
       }
       if(a.routeKind==='ppsDraft')r={url:'/pms/iprs/pps/popup/S_PMS_03011010.do',via:'popupWindow',params:{rqstNo:a.ppsRqstNo,from:'intell'}};
-      else if(a.routeKind==='fileInstruction')r={url:'/pms/iprs/aply/popup/S_PMS_03012020.do',via:'popupWindow',params:{intellRqstNo:a.intellRqstNo}};
+      else if(a.routeKind==='fileInstruction')r={url:'/pms/iprs/aply/popup/S_PMS_03012020.do',via:'popupWindow',params:Object.assign({intellRqstNo:a.intellRqstNo},a.filingRqstNo ? {rqstNo:a.filingRqstNo} : {})};
+      else if(a.routeKind==='fileResultReview') {
+        // 신규 시작은 원화면의 공식 함수를 사용. POST/BPM 상태를 추정 조립하지 않는다.
+        if(!a.aplyRsltRqstDt && a.stageRqstNo && ['05','06','07','08','09'].includes(a.fileRqstStat) && typeof UW.fnShowNewBpmPopup==='function') {
+          try {withOpenCapture(()=>{UW.fnShowNewBpmPopup('/pms/iprs/aply/B_RES00011_01.do',()=>scheduleRefresh('filing-review'),[{name:'aplyRqstNo',value:a.stageRqstNo}]);return true;},trackPopups);return true;}
+          catch(e) {toast('출원결과 검토 열기 실패 — 원 출원관리 화면에서 확인하세요.');return false;}
+        }
+        if(a.aplyRsltRqstNo && a.fileResultStat!=='00') r={url:'/pms/iprs/aply/B_RES00011_01.do',via:'submit',params:{bizKey:a.aplyRsltRqstNo,workFlag:'readOnly',from:'S_PMS_03012010'}};
+        else {openListTab('file',a.mng);return false;}
+      }
       else if(a.routeKind==='applyReview')r={url:'/pms/res/intellppty/B_RES00004_01.do',via:'submit',params:{bizKey:a.intellRqstNo,workFlag:'readOnly',from:'S_PMS_03010100'}};
       else r=resolvePopup(a);
       if(!r || !['bizKey','rqstNo','intellRqstNo'].some((k)=>String(r.params[k] || '').trim())){toast('업무 식별번호가 없어 직접 열 수 없습니다. 해당 업무 목록에서 확인하세요.');return false;}
@@ -3929,7 +4044,7 @@
     task: (a) => a.stage === 'task',
     apply: (a) => a.source === 'apply' || a.stage === 'apply',
     pps: (a) => a.stage === 'pps' && a.source !== 'apply',
-    file: (a) => a.stage === 'file' && !a.routeKind,
+    file: (a) => a.stage === 'file' && a.source !== 'apply',
     reg: (a) => a.stage === 'reg',
     exp: (a) => a.stage === 'exp',
   };
@@ -3941,6 +4056,7 @@
       else if (r.stale) issues.push(n + ': 이번 조회 실패(' + (r.err || '?') + ') — 직전 성공분 사용');
       else if (r.truncated) issues.push(n + ': 부분수신 ' + r.n + '/' + r.total);
       else if (r.maybeTruncated) issues.push(n + ': total 불명 · 상한 ' + r.n + '건');
+      if(r && r.supplementErrors) issues.push(...r.supplementErrors);
     });
     return issues;
   }
@@ -3971,11 +4087,37 @@
     DIAG.length = 0;
     const rows = await Promise.all(CORE_SOURCES.map((n) => callApi(n, null, ctx)));
     const R = {}; CORE_SOURCES.forEach((n, i) => { R[n] = rows[i]; });
+    // 원 출원관리 검색폼: 지시전10 + 확인필요1 + 검토중05~08을 전기간 추가 조회.
+    // 기간 내 1건 이상이어도 보강한다. 전체 과거 완료 이력 때문에 조회 상한을 소모하지 않는다.
+    if(RUNTIME.isCurrent(ctx)) {
+      const blank={rqstCls:'03',rqstStrDt:'',rqstEndDt:'',apvStat:'',ivenTyp:'',item:'',keyword:'',confirmWork1:'',confirmWork2:'',confirmWork3:'',confirmWork4:''};
+      const extras=await Promise.all([
+        callApi('file',Object.assign({},blank,{apvStat:'10'}),ctx),
+        callApi('file',Object.assign({},blank,{confirmWork1:'Y'}),ctx),
+        ...['05','06','07','08'].map(apvStat=>callApi('file',Object.assign({},blank,{apvStat}),ctx))
+      ]);
+      R.file=pdMergeFilingSources([R.file].concat(extras));
+    }
     if (R.exp && R.exp.rows && R.exp.n === 0 && !R.exp.err && RUNTIME.isCurrent(ctx)) {
       const exp2 = await callApi('exp', { rqstStrDt: '', rqstEndDt: '', apvStat: '', searchItem: '', searchKeyword: '', confirmWork1: '', confirmWork2: '', confirmWork3: '', confirmWork4: '' }, ctx);
       if (exp2 && exp2.n > 0) R.exp = exp2;
     }
     return R;
+  }
+  function pdMergeFilingSources(parts) {
+    const good=parts.filter(p=>p && Array.isArray(p.rows));
+    if(!good.length) return parts[0];
+    const merged=new Map(), errors=[];
+    const names=['기간목록','전기간 지시전','전기간 확인필요','전기간 검토05','전기간 검토06','전기간 검토07','전기간 검토08'];
+    parts.forEach((part,i)=>{
+      if(!part || !Array.isArray(part.rows)) {errors.push('출원 '+names[i]+' 조회 실패');return;}
+      if(part.truncated || part.maybeTruncated) errors.push('출원 '+names[i]+' 일부 수신 — 원화면 확인 필요');
+      part.rows.forEach((r,j)=>{
+        const key=r.intellRqstNo || r.rqstNo ? JSON.stringify([r.intellRqstNo || '',r.rqstNo || '']) : 'unknown:'+i+':'+j;
+        merged.set(key,r);
+      });
+    });
+    return Object.assign({},good[0],{rows:Array.from(merged.values()),n:merged.size,total:null,err:null,truncated:false,maybeTruncated:false,supplementErrors:errors});
   }
 
   /* v1.25.8 ── 소스별 폴백 ──────────────────────────────────────────────
@@ -4015,7 +4157,7 @@
 
   function logDiagnostics(opt) {
     try {
-      console.groupCollapsed('[PD] 데이터 진단 v1.26.2' + (opt && opt.noFetch ? ' (IPMS 재조회 없음)' : ''));
+      console.groupCollapsed('[PD] 데이터 진단 v1.26.3' + (opt && opt.noFetch ? ' (IPMS 재조회 없음)' : ''));
       if (opt && opt.noFetch) console.log('[PD] 이번 로드는 IPMS 재조회 없음(REVALIDATE_GAP 이내) — BPM 연결만 재계산. 아래 표는 직전 조회분.');
       console.table(DIAG.map((d) => ({ source: d.name, status: d.status, rows: d.n, total: d.total, truncated: d.truncated || d.maybeTruncated, ms: d.ms, from: d.from, path: d.path, error: d.err })));
       if (gmGet(K.debug, false)) DIAG.filter((d) => d.raw).forEach((d) => console.log('[PD] ' + d.name + ' 응답 미리보기:', d.raw));
@@ -4143,6 +4285,8 @@
     try {
       APPLY_DETAIL_CACHE.clear();
       await enrichApplyDetails(R.apply, ctx);
+      await enrichFilingParents(R, ctx);
+      await enrichFilingPps(R, ctx);
       if (!RUNTIME.isCurrent(ctx)) return;
       const carry = (hard.length && cacheUsable) ? pickCarry(cache.model, hard) : [];
       const next = await buildActions(R, carry);

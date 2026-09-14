@@ -28,10 +28,11 @@
       "path": "scripts/portal-dashboard.user.js",
       "kind": "userscript",
       "title": "[KRISS Portal] 업무 대시보드",
-      "version": "1.26.2",
+      "version": "1.26.3",
       "enabled_at_backup": true,
       "namespace": "kriss.krisstar.tools",
-      "status": "imported"
+      "status": "filing-workflow-fixed-synthetic-tested-runtime-pending",
+      "source_version": "1.26.2"
     },
     {
       "id": "expense-helper",
@@ -324,11 +325,13 @@
     },
     {
       "path": "scripts/portal-dashboard.user.js",
-      "sha256": "5ed817e3c117a34e4f01571b3eb84fe6310d059406edefc540e5ef1c9ef3ef40",
+      "sha256": "5d58758fd1729aa021e311155f89e80c54660594f9a58d4bbcf898bac67dd8a2",
       "source": "tampermonkey/[KRISS Portal] 업무 대시보드.user.js",
       "business_pattern_baseline": {
         "특허 관리번호 형식": "262d5330161da2bfd5407e0695d881acc16ae818d47bf56395abbef3867ea8c0"
-      }
+      },
+      "import_sha256": "5ed817e3c117a34e4f01571b3eb84fe6310d059406edefc540e5ef1c9ef3ef40",
+      "repository_change": "2026-09-14: current PPS / verified exemption filing instructions; office submission confirmation; result review; pending-source enrichment. Internal portal verification pending."
     },
     {
       "path": "scripts/expense-helper.user.js",
