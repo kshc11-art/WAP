@@ -1,6 +1,6 @@
 # KRISS 연차유지료 자동화 v0.6.7
 
-> **유지보수 설계도/Compact GUI (v0.6.7):** `docs/MAINTENANCE_BLUEPRINT.md`를 구조의 첫 진입점으로 추가했습니다. GUI는 기본 960×740으로 축소하고 `작업` / `고급 · 로그` 탭으로 분리했습니다. 현재분기 인식·사전검사·생성은 첫 화면에, profile/Excel backend/부분생성/환경진단/로그는 고급 탭에 둡니다. GUI와 CLI의 현재분기 파일 인식은 이제 `core.classify_current_files()` 한 규칙을 공유합니다.
+> **유지보수 설계도/Compact GUI (v0.6.7):** 현재 저장소의 구조·업무 규칙은 `docs/MAINTAINER_SPEC.md`에서 확인합니다. GUI는 기본 960×740으로 축소하고 `작업` / `고급 · 로그` 탭으로 분리했습니다. 현재분기 인식·사전검사·생성은 첫 화면에, profile/Excel backend/부분생성/환경진단/로그는 고급 탭에 둡니다. GUI와 CLI의 현재분기 파일 인식은 이제 `core.classify_current_files()` 한 규칙을 공유합니다.
 
 > **GUI/결과폴더 개선 (v0.6.6):** 현재분기 상태/인식파일 표 자체도 드래그앤드롭을 받고, 우측의 과거분기/확정예산 영역을 반씩 나눠 저빈도 입력을 작게 배치했습니다. 결과는 `2026년 3분기 연차관리`처럼 생성되며 바로 아래에 `2. 수수료 납부`, `3. 연차유지료 납부`, `템퍼몽키용` 세 폴더가 보입니다. 미매핑 오류는 관리번호/청구행/금액/출원·등록번호/발명명을 함께 표시합니다. 해외 납부수수료 XLSX는 J열과 L열을 각각 별도 외곽선으로 강조합니다.
 
@@ -20,7 +20,7 @@ v0.6.3은 **업무용 Excel 산출 방식을 Microsoft Excel Native(COM)로 되�
 5. **운영 실패 시 fail-fast** — `auto` 모드는 Windows에서 Excel Native를 요구하며 OOXML writer로 몰래 fallback하지 않습니다. Excel이 없으면 업무 파일을 만들지 않고 명확히 중단합니다.
 6. **Portable backend는 개발 전용** — `portable-legacy`는 과거 골든/CI 회귀검사용으로만 남기며 실제 제출파일 생성에는 권장하지 않습니다.
 
-전체 버전별 상세 변경내역은 **`RELEASE_NOTES.md`**를 먼저 보세요.
+버전별 요약은 `CHANGELOG.md`, 이전 상세 문서는 원본 ZIP에 보존되어 있습니다.
 
 ---
 
@@ -285,7 +285,8 @@ PDF의 page count, MuPDF repair 여부, 경고 목록, 내부 정규화 사용 �
 Tampermonkey 설치 파일:
 
 ```text
-tampermonkey/kriss_portal_automation.user.js
+../../scripts/annualfee-expense.user.js (WAP 저장소)
+# 원본 ZIP 단독 배포: tampermonkey/kriss_portal_automation.user.js
 ```
 
 기본 흐름:
@@ -312,7 +313,7 @@ v0.6에서는 수수료 job의 portal 예산코드도 `prep_budget_code(year)`�
 - Dropzone queue가 실제 저장 후에도 유지되는지
 - Kendo e-tax popup이 실세션에서 정확히 1회 열리는지
 
-상세: `docs/PORTAL_AUTOMATION_SPEC.md`, `docs/PORTAL_HANDOFF.md`.
+상세: `docs/PORTAL_HANDOFF.md`, `docs/MAINTAINER_SPEC.md`. 동봉 명세의 구형 배포 경로·검사 명령은 이 README의 현재 안내와 구분합니다.
 
 ---
 
@@ -338,39 +339,21 @@ Windows에서 PyInstaller one-file GUI EXE를 생성합니다. Linux에서 Windo
 
 ---
 
-## 11. 릴리스 정합성 검증
+## 11. 저장소 검증
 
-v0.6부터 `SOURCE_MANIFEST.json`은 직접 손으로 관리하지 않습니다.
+WAP 저장소 루트에서 실행합니다.
 
-```bat
-build_release_metadata.bat
+```text
+python tools/check.py
+python -m unittest discover -s tests -v
+python validation/run.py status
 ```
 
-또는:
-
-```bat
-python tools\test_v06_contracts.py
-python tools\generate_source_manifest.py
-python tools\validate_release.py
-```
-
-`test_v06_contracts.py`는 private 분기자료 없이도 버전 단일소스, 2025/2026 준비금 코드, 수수료 portal payload의 연도 처리, current explicit-unassigned의 invoice-derived `source_period`, 미확인 연도 fail-fast를 검사합니다. Q2 골든이 있는 유지보수 환경에서는 `tools\regression_q2.py`도 함께 실행하세요.
-
-검사 항목:
-
-- Python package version
-- BUILD_INFO / MAINTENANCE_STATE version
-- README title
-- Tampermonkey metadata/내부 VERSION
-- 실제 파일 목록 vs SOURCE_MANIFEST
-- byte size / SHA-256
-- 삭제된 `docs/*.md`를 가리키는 stale Markdown reference
-
-`SOURCE_MANIFEST.json` 자체는 self-hash 순환을 피하기 위해 manifest에서 제외하며 이 정책을 JSON에 명시합니다.
+이 프로그램 폴더에서는 `python tools/test_v06_contracts.py`를 실행할 수 있습니다. 프로그램의 requirements.txt가 필요하며, 실제 Excel/PDF 검증과 raw/golden 대조는 별도입니다. 구형 release manifest 생성 도구는 원본 ZIP에 남기고, 현재 파일 기준은 `../../validation/catalog.json`에서 관리합니다. 과거 golden이 필요한 `tools/regression_q2.py`는 자료가 준비된 환경에서만 실행합니다.
 
 ---
 
-## 12. 검증된 데이터셋
+## 12. 원본 패키지의 과거 검증 기록 (이번 검토 결과 아님)
 
 ### 2026Q1
 - legacy/history 의미 검증
@@ -401,15 +384,12 @@ Q3는 아직 사용자가 제공한 **완료 ZIP 골든이 아니라 운영 입�
 
 ## 13. 유지보수자가 먼저 읽을 문서
 
-1. `docs/MAINTENANCE_BLUEPRINT.md` — 구조/책임경계/변경영향/장애수집자료 설계도
-2. `docs/MAINTAINER_SPEC.md` — 상세 업무규칙/구현/실패모드 단일 권위 명세
-3. `MAINTENANCE_STATE.json` — 현재 검증 상태/미해결 위험
-4. `RELEASE_NOTES.md` — 0.1.0부터 현재까지 실패원인까지 포함한 상세 릴리스 이력
-5. `docs/AI_HANDOFF_PROMPT.md` — 다른 AI에게 프로젝트와 함께 주는 시작 프롬프트
-6. `docs/AI_MAINTENANCE_PLAYBOOK.md` — 장애 유형별 조사 순서
-7. `docs/VALIDATIONS.md` — 과거 회귀/검증 기록 원문
-8. `docs/PORTAL_AUTOMATION_SPEC.md` — 실제 KRISS MIS DOM/이벤트/전자세금계산서/첨부 계약
-9. `docs/PORTAL_HANDOFF.md` — live 검증 상태
+1. [공통 작업 규칙](../../ENGINEERING_RULES.md)
+2. [현재 검증·분석](../../validation/README.md)
+3. [상세 업무·구현 명세](docs/MAINTAINER_SPEC.md)
+4. [Excel Native 구현](docs/EXCEL_NATIVE_BACKEND.md), [포털 인계](docs/PORTAL_HANDOFF.md)
+
+원본 패키지의 별도 설계도·과거 검증 원문·배포 문서는 원본 ZIP에 보존되어 있습니다.
 
 ### 유지보수 금지사항
 

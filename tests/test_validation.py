@@ -46,8 +46,37 @@ class ComparisonTests(unittest.TestCase):
         with patch.object(m,'ROOT',self.root):
             self.assertEqual(m.main(['compare','example']),1)
         self.assertEqual(json.loads(old.read_text())['status'],'ERROR')
+    def test_corrupt_workbook_replaces_old_report(self):
+        from unittest.mock import patch
+        for kind in ('raw','golden','actual','reports'):(self.root/kind/'example').mkdir(parents=True)
+        r=self.root/'raw/example/input.json';r.write_text('{}')
+        a=self.root/'actual/example/report.xlsx';g=self.root/'golden/example/report.xlsx'
+        a.write_bytes(b'incomplete workbook');g.write_bytes(b'incomplete workbook')
+        report=self.root/'reports/example.json';report.write_text('{"status":"PASS"}')
+        case={'id':'example','status':'ready','raw':[{'path':'input.json','sha256':m.digest(r)}],
+              'comparisons':[{'path':'report.xlsx','golden_sha256':m.digest(g)}]}
+        (self.root/'cases.json').write_text(json.dumps({'cases':[case]}))
+        with patch.object(m,'ROOT',self.root):
+            self.assertEqual(m.main(['compare','example']),1)
+        self.assertEqual(json.loads(report.read_text())['status'],'ERROR')
     def test_empty_csv(self):
         with self.assertRaises(m.ValidationError):self.pair('','')
+    def test_malformed_csv(self):
+        with self.assertRaises(m.ValidationError):self.pair('id\n"A','id\nA')
+    def test_xlsx_stale_dimensions(self):
+        import openpyxl, zipfile, re
+        def create(path,value):
+            wb=openpyxl.Workbook();ws=wb.active;ws.append(['id','n']);ws.append(['A',value]);wb.save(path);wb.close()
+            with zipfile.ZipFile(path) as z:parts={x:z.read(x) for x in z.namelist()}
+            name='xl/worksheets/sheet1.xml'
+            parts[name]=re.sub(br'<dimension ref="[^"]+"',b'<dimension ref="A1:A1"',parts[name])
+            with zipfile.ZipFile(path,'w',zipfile.ZIP_DEFLATED) as z:
+                for n,data in parts.items():z.writestr(n,data)
+        a=self.root/'a.xlsx';g=self.root/'g.xlsx'
+        create(a,999);create(g,1)
+        self.assertEqual(m.compare_files(a,g,{})['status'],'FAIL')
+        create(a,1)
+        self.assertEqual(m.compare_files(a,g,{})['status'],'PASS')
     def test_path_escape(self):
         with self.assertRaises(m.ValidationError):m.within(self.root,'../outside')
     def test_pending(self):
@@ -81,5 +110,15 @@ class ComparisonTests(unittest.TestCase):
         a=self.root/'a.xlsx';g=self.root/'g.xlsx';wb=openpyxl.Workbook();wb.active.append(['value']);wb.save(a)
         wb.create_sheet('another');wb.save(g)
         self.assertEqual(m.compare_files(a,g,{})['status'],'FAIL')
+    def test_xlsx_load_failure_closes_input(self):
+        from unittest.mock import patch
+        p=self.root/'broken.xlsx';p.write_bytes(b'not a workbook')
+        opened=[]
+        def broken(stream,**kwargs):
+            opened.append(stream)
+            raise m.BadZipFile('synthetic read failure')
+        with patch('openpyxl.load_workbook',side_effect=broken):
+            with self.assertRaises(m.BadZipFile):m.load_table(p,{})
+        self.assertTrue(opened[0].closed)
 
 if __name__=='__main__':unittest.main()

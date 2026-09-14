@@ -358,9 +358,14 @@ def prepare(
     auto_dir.mkdir(parents=True, exist_ok=True)
     source_archive_lookup = _archive_mapping_inputs(auto_dir, s)
     # Put the matching userscript beside manifest/validation for easier handoff.
-    userscript = Path(__file__).resolve().parents[1] / "tampermonkey" / "kriss_portal_automation.user.js"
-    if userscript.is_file():
-        copy_file(userscript, auto_dir / userscript.name)
+    package_root = Path(__file__).resolve().parents[1]
+    userscripts = (
+        package_root.parent.parent / "scripts" / "annualfee-expense.user.js",
+        package_root / "tampermonkey" / "kriss_portal_automation.user.js",
+    )
+    userscript = next((p for p in userscripts if p.is_file()), None)
+    if userscript is not None:
+        copy_file(userscript, auto_dir / "kriss_portal_automation.user.js")
 
     _emit(progress, "pdf-preflight", 5, "PDF 무결성을 검사하고 필요한 경우 내부 정규화본을 준비합니다.")
     normalized_root = auto_dir / "normalized_sources"
