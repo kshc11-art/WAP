@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "id": "patent-holdings",
+      "status": "awaiting-data",
+      "period": null,
+      "raw": [],
+      "comparisons": []
+    },
+    {
+      "id": "stats-patent",
+      "status": "awaiting-data",
+      "period": null,
+      "raw": [],
+      "comparisons": []
+    },
+    {
+      "id": "stats-ledger",
+      "status": "awaiting-data",
+      "period": null,
+      "raw": [],
+      "comparisons": []
+    },
+    {
+      "id": "stats-paper-performance",
+      "status": "awaiting-data",
+      "period": null,
+      "raw": [],
+      "comparisons": []
+    },
+    {
+      "id": "committee",
+      "status": "awaiting-data",
+      "period": null,
+      "raw": [],
+      "comparisons": []
+    },
+    {
+      "id": "markpro-annualfee",
+      "status": "awaiting-data",
+      "period": null,
+      "raw": [],
+      "comparisons": []
+    },
+    {
+      "id": "annualfee-files",
+      "status": "awaiting-data",
+      "period": null,
+      "raw": [],
+      "comparisons": []
+    }
+  ]
+}

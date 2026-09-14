@@ -1,0 +1,14 @@
+v0.4.1 LOSSLESS-FIRST + SPACING NORMALIZATION
+================================================
+
+1. Source physical HWP cell content is selected with MoveToField + SelectAll.
+2. Source content is pasted into a temporary HWP document.
+3. Only empty paragraphs on the temporary document's TOP-LEVEL List are removed.
+4. Nested table/control Lists are not edited.
+5. Control-looking paragraphs (position span >= 8) are not deleted.
+6. The repeated [heading] paragraph is removed from the temporary copy.
+7. Remaining HWP payload is copied natively and pasted into the same destination field.
+8. Destination content is never cleared/rebuilt.
+9. Duplicate topics are never automatically deleted.
+
+10. Date cleanup first handles Y.M.D (leading-zero month/day), then standalone M.D.

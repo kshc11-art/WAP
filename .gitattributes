@@ -1,10 +1,5 @@
-# 줄바꿈 정규화 — Windows에서 편집해도 diff가 "파일 전체 변경"으로 뜨지 않게 합니다.
-* text=auto eol=lf
-
-*.user.js text eol=lf
-*.py      text eol=lf
-*.md      text eol=lf
-*.sh      text eol=lf
-
-# GitHub에서 언어 인식
-*.user.js linguist-language=JavaScript
+* -text
+# Imported programs keep their original bytes, including Windows launcher CRLF.
+*.hwp binary
+*.hwpx binary
+*.xlsx binary

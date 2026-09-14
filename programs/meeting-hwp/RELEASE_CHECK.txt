@@ -1,0 +1,9 @@
+Release: 0.4.2
+Release check: PASS
+Full Y.M.D normalization: PASS
+Standalone M.D normalization: PASS
+Decimal/unit exception regression: PASS
+Lossless HWP copy/paste: PASS
+install_pywin32_online.bat: non_ascii=0, bare_lf=0, BOM=False
+install_windows.bat: non_ascii=0, bare_lf=0, BOM=False
+run_windows.bat: non_ascii=0, bare_lf=0, BOM=False

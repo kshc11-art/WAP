@@ -1,0 +1,32 @@
+KRISS Annual Fee Automation v0.6.4 - Windows First Run
+==========================================================
+
+IMPORTANT
+---------
+All BAT launchers in v0.6.4 are ASCII-only and use CRLF line endings.
+Do not edit or re-save the BAT files with Korean text.
+
+1. Extract the ZIP completely to a local folder.
+   Example: C:\KRISS_AnnualFee\
+   Paths with Korean characters or spaces are supported in v0.6.4.
+
+2. Make sure Microsoft Excel Desktop is installed.
+
+3. Double-click:
+   install_windows.bat
+
+4. When installation finishes, double-click:
+   native_excel_selftest.bat
+
+5. The self-test should end with:
+   [PASS] Excel Native self-test completed successfully.
+
+6. Then double-click:
+   launch_gui.bat
+
+If Python is not found:
+- Install Python 3.11 or newer from python.org.
+- During installation, enable the Python Launcher / PATH options if offered.
+- Run install_windows.bat again.
+
+If the self-test fails, copy the COMPLETE console output and send it for diagnosis.

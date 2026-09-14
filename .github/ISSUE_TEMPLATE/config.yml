@@ -1,8 +1,0 @@
-blank_issues_enabled: true
-contact_links:
-  - name: 운영 방식이 궁금할 때
-    url: https://github.com/kshc11-art/WAP/blob/main/docs/GITHUB_OPERATIONS.md
-    about: 브랜치·PR·라벨·머지 기준
-  - name: 코딩/보안 규칙
-    url: https://github.com/kshc11-art/WAP/blob/main/ENGINEERING_RULES.md
-    about: 커밋 금지 항목, 방어적 코딩 원칙

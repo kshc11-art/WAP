@@ -1,0 +1,1428 @@
+{
+  "version": 1,
+  "source_date": "2026-09-14",
+  "status": "imported-not-runtime-verified",
+  "programs": [
+    {
+      "id": "ipms-search",
+      "path": "scripts/ipms-search.user.js",
+      "kind": "userscript",
+      "title": "[IPMS] 검색 개선",
+      "version": "1.8.0",
+      "enabled_at_backup": true,
+      "namespace": "kriss-ipms-enhancement",
+      "status": "imported"
+    },
+    {
+      "id": "portal-theme",
+      "path": "scripts/portal-theme.user.js",
+      "kind": "userscript",
+      "title": "[KRISS Portal] 메인 화면 테마",
+      "version": "1.5.5",
+      "enabled_at_backup": true,
+      "namespace": "kriss.krisstar.tools",
+      "status": "imported"
+    },
+    {
+      "id": "portal-dashboard",
+      "path": "scripts/portal-dashboard.user.js",
+      "kind": "userscript",
+      "title": "[KRISS Portal] 업무 대시보드",
+      "version": "1.26.2",
+      "enabled_at_backup": true,
+      "namespace": "kriss.krisstar.tools",
+      "status": "imported"
+    },
+    {
+      "id": "expense-helper",
+      "path": "scripts/expense-helper.user.js",
+      "kind": "userscript",
+      "title": "[KRISS] 지출발의 도우미",
+      "version": "0.2.1",
+      "enabled_at_backup": true,
+      "namespace": "kriss-expense-helper",
+      "status": "imported"
+    },
+    {
+      "id": "mail-gwx",
+      "path": "scripts/mail-gwx.user.js",
+      "kind": "userscript",
+      "title": "[메일] 디자인 및 기능 개선 (최신)",
+      "version": "1.3.16",
+      "enabled_at_backup": true,
+      "namespace": "gwx.kriss.mail",
+      "status": "imported"
+    },
+    {
+      "id": "annualfee-expense",
+      "path": "scripts/annualfee-expense.user.js",
+      "kind": "userscript",
+      "title": "[연차유지료] 지출발의 자동화(최종)",
+      "version": "0.8.3",
+      "enabled_at_backup": true,
+      "namespace": "kriss-annual-fee",
+      "status": "imported"
+    },
+    {
+      "id": "ipms-unified-search",
+      "path": "scripts/ipms-unified-search.user.js",
+      "kind": "userscript",
+      "title": "[특허] 통합검색",
+      "version": "1.1.0",
+      "enabled_at_backup": true,
+      "namespace": "kriss-ipms-enhancement",
+      "status": "imported"
+    },
+    {
+      "id": "ipms-palette",
+      "path": "scripts/ipms-palette.user.js",
+      "kind": "userscript",
+      "title": "[특허] 팔레트 (Ctrl+Space)",
+      "version": "1.3.4",
+      "enabled_at_backup": true,
+      "namespace": "kriss-ipms-enhancement",
+      "status": "imported"
+    },
+    {
+      "id": "ipms-quick-panel",
+      "path": "scripts/ipms-quick-panel.user.js",
+      "kind": "userscript",
+      "title": "KRISS IPMS - V21 Quick Panel Adapter",
+      "version": "2.0.0",
+      "enabled_at_backup": true,
+      "namespace": "kriss-ipms-enhancement",
+      "status": "imported"
+    },
+    {
+      "id": "ipms-detail-keys",
+      "path": "scripts/ipms-detail-keys.user.js",
+      "kind": "userscript",
+      "title": "KRISS IPMS - 상세 팝업 단축키",
+      "version": "1.0",
+      "enabled_at_backup": true,
+      "namespace": "kriss-ipms-enhancement",
+      "status": "imported"
+    },
+    {
+      "id": "stats-patent",
+      "path": "scripts/stats-patent.user.js",
+      "kind": "userscript",
+      "title": "KRISS Patent Stats Extractor (특허 통계추출)",
+      "version": "0.8.3",
+      "enabled_at_backup": false,
+      "namespace": "kriss-patent-stats",
+      "status": "needs-validation"
+    },
+    {
+      "id": "ipms-compare-paper",
+      "path": "scripts/ipms-compare-paper.user.js",
+      "kind": "userscript",
+      "title": "KRISS 개인저작물 논문 대조 Helper",
+      "version": "1.1.1",
+      "enabled_at_backup": true,
+      "namespace": "https://krisstar.kriss.re.kr/",
+      "status": "imported"
+    },
+    {
+      "id": "ipms-joint-application",
+      "path": "scripts/ipms-joint-application.user.js",
+      "kind": "userscript",
+      "title": "KRISS 공동출원 Helper",
+      "version": "0.3.2",
+      "enabled_at_backup": true,
+      "namespace": "kriss-joint-application-helper",
+      "status": "imported"
+    },
+    {
+      "id": "worktime-balance",
+      "path": "scripts/worktime-balance.user.js",
+      "kind": "userscript",
+      "title": "KRISS 근무시간 초과·부족시간 표시",
+      "version": "1.0.0",
+      "enabled_at_backup": true,
+      "namespace": "kriss.local.worktime",
+      "status": "imported"
+    },
+    {
+      "id": "mail-readability",
+      "path": "scripts/mail-readability.user.js",
+      "kind": "userscript",
+      "title": "KRISS 메일 가독성 개선 + 답장/전달 강조",
+      "version": "1.0",
+      "enabled_at_backup": false,
+      "namespace": "kriss-mail- readable",
+      "status": "imported"
+    },
+    {
+      "id": "stats-ledger",
+      "path": "scripts/stats-ledger.user.js",
+      "kind": "userscript",
+      "title": "KRISS 보조원장(기술이전) 지재권 집행내역 정제 추출",
+      "version": "1.1",
+      "enabled_at_backup": false,
+      "namespace": "kriss.pms.techtrns.ipledger",
+      "status": "needs-validation"
+    },
+    {
+      "id": "console-launcher",
+      "path": "scripts/console-launcher.user.js",
+      "kind": "userscript",
+      "title": "KRISS 요구자료 콘솔 — 포털 바로가기",
+      "version": "0.2.0",
+      "enabled_at_backup": false,
+      "namespace": "kriss.internal.console",
+      "status": "imported"
+    },
+    {
+      "id": "console-adapters",
+      "path": "scripts/console-adapters.user.js",
+      "kind": "userscript",
+      "title": "KRISS 요구자료 콘솔 — 항목 어댑터",
+      "version": "0.2.0",
+      "enabled_at_backup": false,
+      "namespace": "kriss.internal.console",
+      "status": "imported"
+    },
+    {
+      "id": "console-host",
+      "path": "scripts/console-host.user.js",
+      "kind": "userscript",
+      "title": "KRISS 요구자료 콘솔",
+      "version": "0.2.0",
+      "enabled_at_backup": false,
+      "namespace": "kriss.internal.console",
+      "status": "imported"
+    },
+    {
+      "id": "stats-paper-performance",
+      "path": "scripts/stats-paper-performance.user.js",
+      "kind": "userscript",
+      "title": "KRISS 인사평가 논문실적 2026 — 최종본",
+      "version": "1.3.1",
+      "enabled_at_backup": true,
+      "namespace": "kriss-paper-eval",
+      "status": "needs-validation"
+    },
+    {
+      "id": "ipms-input-helper",
+      "path": "scripts/ipms-input-helper.user.js",
+      "kind": "userscript",
+      "title": "KRISS 입력 Helper",
+      "version": "1.11.1",
+      "enabled_at_backup": true,
+      "namespace": "https://krisstar.kriss.re.kr/",
+      "status": "imported"
+    },
+    {
+      "id": "core-recon",
+      "path": "scripts/core-recon.user.js",
+      "kind": "userscript",
+      "title": "KRISS 정찰기 v8.0.3 · 화면·자원·업무 기록",
+      "version": "8.0.3",
+      "enabled_at_backup": false,
+      "namespace": "kriss.recon.focused.v8",
+      "status": "imported"
+    },
+    {
+      "id": "ipms-compare-iprs",
+      "path": "scripts/ipms-compare-iprs.user.js",
+      "kind": "userscript",
+      "title": "KRISS 지재권 대조 Helper",
+      "version": "1.2.1",
+      "enabled_at_backup": true,
+      "namespace": "https://krisstar.kriss.re.kr/",
+      "status": "imported"
+    },
+    {
+      "id": "portal-popup-manager",
+      "path": "scripts/portal-popup-manager.user.js",
+      "kind": "userscript",
+      "title": "KRISS 팝업·창 관리자",
+      "version": "1.1.0",
+      "enabled_at_backup": true,
+      "namespace": "https://krisstar.kriss.re.kr/",
+      "status": "imported"
+    },
+    {
+      "id": "annualfee-files",
+      "path": "programs/annualfee-files/run.py",
+      "title": "연차유지료 파일생성",
+      "kind": "python",
+      "status": "imported"
+    },
+    {
+      "id": "hwp-merge",
+      "path": "programs/hwp-merge.py",
+      "title": "한글·PDF 병합",
+      "kind": "python",
+      "status": "imported"
+    },
+    {
+      "id": "hwp-hotkeys",
+      "path": "programs/hwp-hotkeys.py",
+      "title": "한글 편집 단축키",
+      "kind": "python",
+      "status": "imported"
+    },
+    {
+      "id": "excel-merge",
+      "path": "programs/excel-merge.py",
+      "title": "엑셀 병합",
+      "kind": "python",
+      "status": "imported"
+    },
+    {
+      "id": "quick-panel",
+      "path": "programs/quick-panel/v21-pro-shortcut-studio-v25.html",
+      "title": "V21 단축키 Studio + AHK",
+      "kind": "html-ahk",
+      "status": "imported"
+    },
+    {
+      "id": "markpro-annualfee",
+      "path": "programs/markpro-annualfee/patent_annuity_tool_v1_4_offline.html",
+      "title": "마크프로 연차료 조사",
+      "kind": "html-python",
+      "status": "needs-validation"
+    },
+    {
+      "id": "committee",
+      "path": "programs/committee/kriss_committee_automation.py",
+      "title": "위원회 자료 자동화",
+      "kind": "python",
+      "status": "needs-validation"
+    },
+    {
+      "id": "meeting-hwp",
+      "path": "programs/meeting-hwp/hwp_meeting_merger.py",
+      "title": "회의 HWP 취합",
+      "kind": "python-powershell",
+      "status": "imported"
+    },
+    {
+      "id": "patent-holdings",
+      "path": "programs/patent-holdings/patent_yearend_classifier_v5.3.py",
+      "title": "보유특허 분류",
+      "kind": "python",
+      "status": "needs-validation"
+    }
+  ],
+  "files": [
+    {
+      "path": "scripts/ipms-search.user.js",
+      "sha256": "d503b20cefdcc83df4c397eefbe92c326eccf947f6523b9df5a66ada5a763256",
+      "source": "tampermonkey/[IPMS] 검색 개선.user.js",
+      "business_pattern_baseline": {
+        "특허 관리번호 형식": "6bd078f61832a8ebbc08d2163e45a7acc7fa08f4ed7c51bf3508aa3e8369ab7d"
+      }
+    },
+    {
+      "path": "scripts/portal-theme.user.js",
+      "sha256": "91f95c13450f253cbd5d167ea79eec812537d2995c5b91b142128d6add538b2c",
+      "source": "tampermonkey/[KRISS Portal] 메인 화면 테마.user.js"
+    },
+    {
+      "path": "scripts/portal-dashboard.user.js",
+      "sha256": "5ed817e3c117a34e4f01571b3eb84fe6310d059406edefc540e5ef1c9ef3ef40",
+      "source": "tampermonkey/[KRISS Portal] 업무 대시보드.user.js",
+      "business_pattern_baseline": {
+        "특허 관리번호 형식": "262d5330161da2bfd5407e0695d881acc16ae818d47bf56395abbef3867ea8c0"
+      }
+    },
+    {
+      "path": "scripts/expense-helper.user.js",
+      "sha256": "aab376de1c0a34373494c39f7aea5d30c6ff2820c706a7bc697bbb37a833447c",
+      "source": "tampermonkey/[KRISS] 지출발의 도우미.user.js"
+    },
+    {
+      "path": "scripts/mail-gwx.user.js",
+      "sha256": "91ae958d4f091c219d8086a17abc5a7733d4d0f0088c7087ad5f7253a8d83564",
+      "source": "tampermonkey/[메일] 디자인 및 기능 개선 (최신).user.js"
+    },
+    {
+      "path": "scripts/annualfee-expense.user.js",
+      "sha256": "6caa1d92c4f0555ce7fe7f602108749333edee51302ca1a0cc9b130757aded4b",
+      "source": "tampermonkey/[연차유지료] 지출발의 자동화(최종).user.js"
+    },
+    {
+      "path": "scripts/ipms-unified-search.user.js",
+      "sha256": "38a290193e7c80c0f0ff53c6abebc7aaa8f03e8e110e8ee616f54c364873d3a3",
+      "source": "tampermonkey/[특허] 통합검색.user.js"
+    },
+    {
+      "path": "scripts/ipms-palette.user.js",
+      "sha256": "cc059aa3cdf8052ca2b58d423002b14ccc590e1a5cc2dfa3a6a9321006e0cdde",
+      "source": "tampermonkey/[특허] 팔레트 (Ctrl+Space).user.js",
+      "business_pattern_baseline": {
+        "특허 관리번호 형식": "df50d047e5789601ab39935a6bad9744d1afa6cdbe3288e12aae6b953a71b7cc"
+      }
+    },
+    {
+      "path": "scripts/ipms-quick-panel.user.js",
+      "sha256": "743bfe416258712e48b63be9b49230837bbbc2b840d5d1402dcd8cd328961217",
+      "source": "tampermonkey/KRISS IPMS - V21 Quick Panel Adapter.user.js"
+    },
+    {
+      "path": "scripts/ipms-detail-keys.user.js",
+      "sha256": "7ca2c17b4356cf4dc31e24536803ca69585869efa65cb164176d065dc2e2aa58",
+      "source": "tampermonkey/KRISS IPMS - 상세 팝업 단축키.user.js"
+    },
+    {
+      "path": "scripts/stats-patent.user.js",
+      "sha256": "bb9768c64c08e5cb6adde04d5f2aa82c86d531d8da97ddc055a188f5c33c687a",
+      "source": "tampermonkey/KRISS Patent Stats Extractor (특허 통계추출).user.js",
+      "business_pattern_baseline": {
+        "휴대전화번호": "208957e7013c285dec07da3bee28a8c053c88b8d7e549144998580c10f53073b"
+      }
+    },
+    {
+      "path": "scripts/ipms-compare-paper.user.js",
+      "sha256": "4cde0227747e647fb2aaf87d6dcd6315a7422f78ccda36382b324f4f07d7a95d",
+      "source": "tampermonkey/KRISS 개인저작물 논문 대조 Helper.user.js"
+    },
+    {
+      "path": "scripts/ipms-joint-application.user.js",
+      "sha256": "76b228c4699eea09f87ccf4c52bf09e63e7a222fd883a0689c0f0d2c67c2adb7",
+      "source": "tampermonkey/KRISS 공동출원 Helper.user.js",
+      "business_pattern_baseline": {
+        "연구기관 이메일 주소": "9a23f8a8f2fb78fe3c806ce162ae7ed49b88997921ef4a8eb306ad1e6002194e",
+        "휴대전화번호": "e1058a4249c6f2ce2eab5a23b81d87472600bf4a74b7689143af5f9a25eb2463",
+        "특허 관리번호 형식": "f85afe27c308da90f447a1ddef794ca37af89a6dc929e04cb5a5d172fe154d1e"
+      }
+    },
+    {
+      "path": "scripts/worktime-balance.user.js",
+      "sha256": "905ae847cf2960f9851a28afa89780150de660f55230bdad6c53835388600329",
+      "source": "tampermonkey/KRISS 근무시간 초과·부족시간 표시.user.js"
+    },
+    {
+      "path": "scripts/mail-readability.user.js",
+      "sha256": "01a7896173e01c8504f2b1432ebd0e1e3e86ec9b6e66c9138aa1c672087f2573",
+      "source": "tampermonkey/KRISS 메일 가독성 개선 + 답장-전달 강조.user.js"
+    },
+    {
+      "path": "scripts/stats-ledger.user.js",
+      "sha256": "bb098acf9d5993677ef7ed464443b13f8dd4c5d6a2e6d2ec3a02ab710e267b91",
+      "source": "tampermonkey/KRISS 보조원장(기술이전) 지재권 집행내역 정제 추출.user.js",
+      "business_pattern_baseline": {
+        "특허 관리번호 형식": "e452b9821d4dad5751a5c1a1b74688ad32af65c679b23ba270d8ea4dd008cf9f"
+      }
+    },
+    {
+      "path": "scripts/console-launcher.user.js",
+      "sha256": "316edb343c87d076b50407c745fd5f20c172af5f30c652096911c744c15f17f5",
+      "source": "tampermonkey/KRISS 요구자료 콘솔 — 포털 바로가기.user.js"
+    },
+    {
+      "path": "scripts/console-adapters.user.js",
+      "sha256": "822d395933361afefb4825495aa1e13ed248252d89a41ae6480587f3a703d204",
+      "source": "tampermonkey/KRISS 요구자료 콘솔 — 항목 어댑터.user.js"
+    },
+    {
+      "path": "scripts/console-host.user.js",
+      "sha256": "0e079c20bc051e1026f8a88ecc858a38d9f37cb68fa3304af02841f3ae9b7c3d",
+      "source": "tampermonkey/KRISS 요구자료 콘솔.user.js"
+    },
+    {
+      "path": "scripts/stats-paper-performance.user.js",
+      "sha256": "ff4deb4de86294fa86635eaf3d9ee54e3c5aff89ca3cd6de80eed090336fc1e0",
+      "source": "tampermonkey/KRISS 인사평가 논문실적 2026 — 최종본.user.js"
+    },
+    {
+      "path": "scripts/ipms-input-helper.user.js",
+      "sha256": "e82307892a0bd81735c5d43ef17f73315543e20c9e57a273b4104e3087ac7891",
+      "source": "tampermonkey/KRISS 입력 Helper.user.js",
+      "business_pattern_baseline": {
+        "연구기관 이메일 주소": "1ee1d62f50e771715a02e80f4c9956f1ef88114afc419cc2c473cec6a6008ffb",
+        "사번-이름 형식": "ab03e6f9f6a7aa50fe2ece719fcf4075efdcb0f9aec6ecf695a3f85fc0a204ae",
+        "특허 관리번호 형식": "092d974d319ec8c0269d5dffe620b4cec6369e25cd784cbf2c8c670241819046"
+      }
+    },
+    {
+      "path": "scripts/core-recon.user.js",
+      "sha256": "f36a1c0255bb4e5ac429577d5719bb788dbe0818bf8cb198b77f0e94101eb7e6",
+      "source": "tampermonkey/KRISS 정찰기 v8.0.3 · 화면·자원·업무 기록.user.js"
+    },
+    {
+      "path": "scripts/ipms-compare-iprs.user.js",
+      "sha256": "3af713513a75a7fa2c835f3d9563ca225480f0ab000debe204252948bd087297",
+      "source": "tampermonkey/KRISS 지재권 대조 Helper.user.js"
+    },
+    {
+      "path": "scripts/portal-popup-manager.user.js",
+      "sha256": "ca58bce8ef39ca4402b27366efe5069761640a1d1fbe9d6a711f1a5261fccd48",
+      "source": "tampermonkey/KRISS 팝업·창 관리자.user.js"
+    },
+    {
+      "path": "programs/annualfee-files/build_windows_exe.bat",
+      "sha256": "cad6e3905c3a6bc6963c4fc155a33ea7fd4e3d63406d08680b15e8eee7ca81eb",
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/build_windows_exe.bat"
+    },
+    {
+      "path": "programs/annualfee-files/CHANGELOG.md",
+      "sha256": "d3925bab21b1692b6dfcc40d811de34d56eada0a5ac67e3dbf373340718ea0ff",
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/CHANGELOG.md",
+      "business_pattern_baseline": {
+        "특허 관리번호 형식": "319c7562427cfc9be0a892b26bafa9587d6bc0c7a8ac651075e52111909ff596"
+      }
+    },
+    {
+      "path": "programs/annualfee-files/config.example.json",
+      "sha256": "0ffe8ceb7edd02993a5b9d15d7cf347ee89d3cd44a31e341d67384093d745c72",
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/config.example.json"
+    },
+    {
+      "path": "programs/annualfee-files/docs/EXCEL_NATIVE_BACKEND.md",
+      "sha256": "0922c113b4455f899b3ea875c7774b2a6905ba933332d5ddc8033c4f7a3c760e",
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/docs/EXCEL_NATIVE_BACKEND.md"
+    },
+    {
+      "path": "programs/annualfee-files/docs/MAINTAINER_SPEC.md",
+      "sha256": "4242ff09f759c4362780b7e06c8e906aae478a5531a7bb25f43fc57948b47fe6",
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/docs/MAINTAINER_SPEC.md",
+      "business_pattern_baseline": {
+        "특허 관리번호 형식": "d3353d2746da6edb6961057d34407fda287a0c651aec0c80183b919bfea7e85c"
+      }
+    },
+    {
+      "path": "programs/annualfee-files/docs/PORTAL_HANDOFF.md",
+      "sha256": "63eb8d1d4655867f8c8836d33c971c96f980126cf5c4c6b24daf24e10889ce85",
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/docs/PORTAL_HANDOFF.md"
+    },
+    {
+      "path": "programs/annualfee-files/install_windows.bat",
+      "sha256": "74c530b5473dcbeee0ef3dbd5b078223f73839c922d71ab8d4fba46aee32193a",
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/install_windows.bat"
+    },
+    {
+      "path": "programs/annualfee-files/kriss_annual_fee/bridge.py",
+      "sha256": "89e0638f65bfa38f7799497de2fbd898b57304cc30b8be55ad06af858751aa85",
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/kriss_annual_fee/bridge.py"
+    },
+    {
+      "path": "programs/annualfee-files/kriss_annual_fee/core.py",
+      "sha256": "af36bee8578fb6cde33e9531b25b23e6d8b023e76288961c38d4dd8125565259",
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/kriss_annual_fee/core.py"
+    },
+    {
+      "path": "programs/annualfee-files/kriss_annual_fee/excel_backend.py",
+      "sha256": "0cac7082a06f2fc5be132d029da1f060f9e5bb0aa91bbb8702003ccf833dbd69",
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/kriss_annual_fee/excel_backend.py"
+    },
+    {
+      "path": "programs/annualfee-files/kriss_annual_fee/excel_com.py",
+      "sha256": "ba2f21e69d3b9d062b44bc8e412acedb6889c18f62ecdcd530a974195ebd0156",
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/kriss_annual_fee/excel_com.py"
+    },
+    {
+      "path": "programs/annualfee-files/kriss_annual_fee/excel_native.py",
+      "sha256": "ddbd0fdd5aed6e44b5cb8bfef7a05a6bf8229bbf2af1c36d792cb04ca3668592",
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/kriss_annual_fee/excel_native.py"
+    },
+    {
+      "path": "programs/annualfee-files/kriss_annual_fee/gui.py",
+      "sha256": "aedcb630e6d7ddd994afeeaa0af9e4dbe546ffa6aaba4cfa5d2d59368bceb92b",
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/kriss_annual_fee/gui.py"
+    },
+    {
+      "path": "programs/annualfee-files/kriss_annual_fee/mapping.py",
+      "sha256": "6f5db8e8f0b2feb30c02f9605181480555694f0571eec3bdf773983393e3cd5e",
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/kriss_annual_fee/mapping.py",
+      "business_pattern_baseline": {
+        "특허 관리번호 형식": "2bca8a0959a7a2c18d07cc0f1f3b0d3cc1e917221fbe7ec87f0f490074c293ee"
+      }
+    },
+    {
+      "path": "programs/annualfee-files/kriss_annual_fee/pdf_mark.py",
+      "sha256": "d487a434847aadefeaaba96d535b856a93fe9248055733fb62a2ff61662f58b7",
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/kriss_annual_fee/pdf_mark.py",
+      "business_pattern_baseline": {
+        "특허 관리번호 형식": "cac4178ff9de91a924be3fdbe118e56a9df8f9c41851ccd1be1f61bb6c8c3b5b"
+      }
+    },
+    {
+      "path": "programs/annualfee-files/kriss_annual_fee/portal_contract.py",
+      "sha256": "3709d1c7dc6c21e4506db9280129f6fd4c9d182b4ea27d587b3b75a55f28d660",
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/kriss_annual_fee/portal_contract.py"
+    },
+    {
+      "path": "programs/annualfee-files/kriss_annual_fee/version.py",
+      "sha256": "30b933373e8c3e66cc68a742a14e8e1de132f82d18a0ce7b6c7db958f62ab4ca",
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/kriss_annual_fee/version.py"
+    },
+    {
+      "path": "programs/annualfee-files/kriss_annual_fee/workflow.py",
+      "sha256": "7afd77b5c6575e12b98f707670bdddaa5a28bd6a10028417fb55401f140f46fb",
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/kriss_annual_fee/workflow.py"
+    },
+    {
+      "path": "programs/annualfee-files/kriss_annual_fee/xlsx_ooxml.py",
+      "sha256": "7fd76a1215854a9397f2daed4768288d994dedd647f04a712badf0abbf5d70ed",
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/kriss_annual_fee/xlsx_ooxml.py"
+    },
+    {
+      "path": "programs/annualfee-files/kriss_annual_fee/__init__.py",
+      "sha256": "7d3614ade8fafe92cda62fefcd1ff89a726f4e1165025adb8dfbe8ed9005dd64",
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/kriss_annual_fee/__init__.py"
+    },
+    {
+      "path": "programs/annualfee-files/launch_gui.bat",
+      "sha256": "4a197ac2bc5fc3da6c9e9b0568fb9fde12e6a8d2f454e42799f1520ac0e007c5",
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/launch_gui.bat"
+    },
+    {
+      "path": "programs/annualfee-files/native_excel_selftest.bat",
+      "sha256": "4b6fe00211b0b65c7609662f5b95f0cb950e95dc6f8bac8537a5f4712164d943",
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/native_excel_selftest.bat"
+    },
+    {
+      "path": "programs/annualfee-files/prepare_example.bat",
+      "sha256": "3c0ebb7a3e25b70d7ae2862bec3d2d49366bbfdb7c36d652f00749ef8147de45",
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/prepare_example.bat"
+    },
+    {
+      "path": "programs/annualfee-files/README.md",
+      "sha256": "403dd2f624e341d3f04191703ffb3ffd6878d31cd017d13aa584c1ccc1443a43",
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/README.md",
+      "business_pattern_baseline": {
+        "특허 관리번호 형식": "fd80e3bb0eabbaf46a0d10a9c9742723c34d5fcbc3226b11f9a31892cd5a37b7"
+      }
+    },
+    {
+      "path": "programs/annualfee-files/requirements.txt",
+      "sha256": "d656e71d8294a6c82c1644d9b1e061764df65da617b4521c5a86d8b5d857853e",
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/requirements.txt"
+    },
+    {
+      "path": "programs/annualfee-files/run.py",
+      "sha256": "e53780675b01a95dbfcfecfa0e4665c6120a39495cba6187beecdc9bd2ef56ef",
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/run.py"
+    },
+    {
+      "path": "programs/annualfee-files/run_gui.pyw",
+      "sha256": "2dd74803e9e1adeff8de23e67d9c6f124a44fe86467fa9478a229ddbd4194824",
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/run_gui.pyw"
+    },
+    {
+      "path": "programs/annualfee-files/system_doctor.bat",
+      "sha256": "c2d64aa2f536cf16113bd8e4c0afe4081e6032d0856b7f74c3d5c526457afa9e",
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/system_doctor.bat"
+    },
+    {
+      "path": "programs/annualfee-files/tools/native_excel_selftest.py",
+      "sha256": "e3fb872087fa3dcba6b72f9cc2bc0d5666b866301190924e1b0f6400e6abcd5a",
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/tools/native_excel_selftest.py"
+    },
+    {
+      "path": "programs/annualfee-files/tools/regression_q2.py",
+      "sha256": "2c8080c88af3e1ea6711d00df08ddef168034430f2b5007ad0d42b7cbefe1fb0",
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/tools/regression_q2.py",
+      "business_pattern_baseline": {
+        "특허 관리번호 형식": "950256021f20a237d0d595b68cdc55fdb4127750a2b5ed34c03cbc6c76db44cc"
+      }
+    },
+    {
+      "path": "programs/annualfee-files/tools/system_doctor.py",
+      "sha256": "52e1cbcfa4cdb7527a5571016df6e2a4bcbe89fe6fcb45b1ce0f200e075d0750",
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/tools/system_doctor.py"
+    },
+    {
+      "path": "programs/annualfee-files/tools/test_bridge_smoke.py",
+      "sha256": "218f12b9e3114f3fc586fc892b65782f62a3c677ae74f3e2d9ce9b6e50bf8d46",
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/tools/test_bridge_smoke.py"
+    },
+    {
+      "path": "programs/annualfee-files/tools/test_portal_contract.py",
+      "sha256": "a8d1e106bd6f3014ada93d5f302deeb5f1a80523bb56d3527e7e19621d6a929d",
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/tools/test_portal_contract.py"
+    },
+    {
+      "path": "programs/annualfee-files/tools/test_v06_contracts.py",
+      "sha256": "f6dd0ef9b4ed767975a5943a76113db6202387d04280b2dd3310b2743307fd5b",
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/tools/test_v06_contracts.py"
+    },
+    {
+      "path": "programs/annualfee-files/tools/validate_portal_snapshots.py",
+      "sha256": "7ebdce9df206f96e46a0c9420ae87262553a3a4de1890fe1e9094fb68f72087a",
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/tools/validate_portal_snapshots.py"
+    },
+    {
+      "path": "programs/annualfee-files/WINDOWS_FIRST_RUN.txt",
+      "sha256": "b5df98da9959853ebda4e33e6af041b41a8cd782549cc767e589315c99a3f986",
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/WINDOWS_FIRST_RUN.txt"
+    },
+    {
+      "path": "programs/hwp-merge.py",
+      "sha256": "69dbe5060bd4d563807aad045248b58d3aaca0d3cffd11359392ec9b63d6449b",
+      "source": "hwp-merge/한글병합.py"
+    },
+    {
+      "path": "programs/hwp-hotkeys.py",
+      "sha256": "98f4cf3a9f7ed1d82222d582c999c5ba387852d994c898d90e41cc008cde1884",
+      "source": "hwp-hotkeys/한글편집단축키3.0.py"
+    },
+    {
+      "path": "programs/quick-panel/KRISS-IPMS-V21-Starter-Dictionary-v25.json",
+      "sha256": "05ecb4aa183455ab5cbb9509ecb4fd8bca214be505244f42e9be227011208c0e",
+      "source": "quick-panel/v21-pro-shortcut-studio-v25-quick-panel-package/KRISS-IPMS-V21-Starter-Dictionary-v25.json"
+    },
+    {
+      "path": "programs/quick-panel/MANUAL-V21-Shortcut-Studio-v25.md",
+      "sha256": "62b7011a71b7fed27482c80db5320aef8048e97531d52e1194c3a12c56c1c54d",
+      "source": "quick-panel/v21-pro-shortcut-studio-v25-quick-panel-package/MANUAL-V21-Shortcut-Studio-v25.md"
+    },
+    {
+      "path": "programs/quick-panel/README-V21-Quick-Panel-v25.txt",
+      "sha256": "f7c9995d6c700b4f3c2787108e7f7e036a1884a57ffd117a6323764053492cf0",
+      "source": "quick-panel/v21-pro-shortcut-studio-v25-quick-panel-package/README-V21-Quick-Panel-v25.txt"
+    },
+    {
+      "path": "programs/quick-panel/v21-pro-companion-v7.ahk",
+      "sha256": "aba9a52314bd5f3414e8e37822d47f9d02d77cddced8116289ef4048a1b3ad80",
+      "source": "quick-panel/v21-pro-shortcut-studio-v25-quick-panel-package/v21-pro-companion-v7.ahk"
+    },
+    {
+      "path": "programs/quick-panel/v21-pro-shortcut-studio-v25.html",
+      "sha256": "1e4cde32c52f14af48946a3811f2cbbb6d85524d4d8b466cf4c11b7dd664716b",
+      "source": "quick-panel/v21-pro-shortcut-studio-v25-quick-panel-package/v21-pro-shortcut-studio-v25.html"
+    },
+    {
+      "path": "programs/excel-merge.py",
+      "sha256": "2bb667ab6df9887d7186ee3427c18923c0983b59c40540b540c06e6413578e08",
+      "source": "excel-merge/엑셀 병합.py"
+    },
+    {
+      "path": "programs/markpro-annualfee/patent_annuity_tool_spec_v1_2.md",
+      "sha256": "bd80902f4fc805811788f9101752d40470aacd89a7fdc9b3d53cf628ae5c3e95",
+      "source": "markpro-spec/patent_annuity_tool_spec_v1_2.md",
+      "business_pattern_baseline": {
+        "휴대전화번호": "6bbf6c1e69bfba550598283e7c265d40119ce4d1e396bc1f8845f961f26e04af",
+        "특허 관리번호 형식": "a7a072111c6e11ace6955158885d0290689b6a2cfc56ad0bd5eb326afb6343b7"
+      }
+    },
+    {
+      "path": "programs/markpro-annualfee/special_patents_history.py",
+      "sha256": "dff37585e2549c0a46039b9628ad4b63a2a26f9730e8aec15c35605d3322d073",
+      "source": "markpro-spec/special_patents_history.py",
+      "business_pattern_baseline": {
+        "특허 관리번호 형식": "9f9c4fca2b43af13b43990d9fa2302af090d488e5fee1a26702a2501e12d31f9"
+      }
+    },
+    {
+      "path": "programs/markpro-annualfee/patent_annuity_tool_v1_4_offline.html",
+      "sha256": "bfac7f4228697b909ecb9e70c2529a901ec2256c23104c1e912ee0723dc06d28",
+      "source": "markpro-annualfee/patent_annuity_tool_v1_4_offline.html",
+      "business_pattern_baseline": {
+        "휴대전화번호": "6508068e5fa9d7c8d70c6ce0b2c2b86759bcae442c6ba312eddcecfd0d039d64",
+        "특허 관리번호 형식": "ce164157ae5c00d640b9c32d94df0f52ffcd3bb6ef73d661213e4bde119c3f71"
+      }
+    },
+    {
+      "path": "programs/markpro-annualfee/annuity_engine_v1_3.js",
+      "sha256": "bbfb59bf3d5236e0dc285b83236131b7fe0c43f8fdf554f72516c6262d0f78d8",
+      "source": "markpro-annualfee/annuity_engine_v1_3.js"
+    },
+    {
+      "path": "programs/committee/CHANGELOG.md",
+      "sha256": "767470c94e77a0f4de9bd1adf965de90193b97e107e512d89567d275c7d06467",
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/CHANGELOG.md"
+    },
+    {
+      "path": "programs/committee/README.md",
+      "sha256": "a9953c461016b2948be19eb6bc4d414557f0d1e0ecbdbf7bc24cdd49d6a8684f",
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/README.md"
+    },
+    {
+      "path": "programs/committee/bootstrap_runtime.py",
+      "sha256": "b4c172c85c1fe38c55b081a6a8ea225a8678708ef5511292fe89a12ee0dea314",
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/bootstrap_runtime.py"
+    },
+    {
+      "path": "programs/committee/doctor.py",
+      "sha256": "a56e868b5ddd53dec866c0a84f7ddac3f101891a9c1d56dae95584c71748cc5e",
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/doctor.py"
+    },
+    {
+      "path": "programs/committee/fill_hwp_windows.bat",
+      "sha256": "4ebe907ba10b97e56e426c8cecbaffc82f553da1717fd5d50fd2758f96392bf9",
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/fill_hwp_windows.bat"
+    },
+    {
+      "path": "programs/committee/hwp_fill.py",
+      "sha256": "2ccab24c86327f8ce8b892a63c2ff74005877bdd7b9072465d6e632ba7090a72",
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/hwp_fill.py"
+    },
+    {
+      "path": "programs/committee/hwp_support.py",
+      "sha256": "9b4c1238aef4db533d6b93ed6b89d7b1d34406e183a2b6de5feb430f1f489c1a",
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/hwp_support.py"
+    },
+    {
+      "path": "programs/committee/hwpx_fill.py",
+      "sha256": "073b305a40255152c0b037c2b0747ab3bb91afa26d553bdedacf3edd018f46a6",
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/hwpx_fill.py"
+    },
+    {
+      "path": "programs/committee/install_windows.bat",
+      "sha256": "6095adc694ee284498eddec07b6dfa42411b8d0724b15f84092a9b938c27338a",
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/install_windows.bat"
+    },
+    {
+      "path": "programs/committee/kriss_committee_automation.py",
+      "sha256": "d8f7514bc5b8e3355f9be330516626ed430a69df3cf3e9137410ec02427586aa",
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/kriss_committee_automation.py",
+      "business_pattern_baseline": {
+        "특허 관리번호 형식": "d657bce4c80a6d86c2664fd9c2ec93ab2e3a77537cbec9cb5fea4116c7000b83"
+      }
+    },
+    {
+      "path": "programs/committee/open_hwp_templates.bat",
+      "sha256": "3a823332f09eeac5c0fa2d8e511a8621e7cedbad71422110e93ddb3af2aeaa1c",
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/open_hwp_templates.bat"
+    },
+    {
+      "path": "programs/committee/requirements.txt",
+      "sha256": "55ebcdb64d10dc7ceb23ceef103fc595a565b88218cd49c38e1776cbaf65b953",
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/requirements.txt"
+    },
+    {
+      "path": "programs/committee/run_gui.pyw",
+      "sha256": "4e8b276f703e7848a99fdda8b65016d65e920e3d94ceaecf63d0780ebad1297b",
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/run_gui.pyw"
+    },
+    {
+      "path": "programs/committee/run_windows.bat",
+      "sha256": "f9a32802dc7162352fe7d6cf48f763cc41619fe830376b7a48793e34448248fc",
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/run_windows.bat"
+    },
+    {
+      "path": "programs/committee/system_doctor.bat",
+      "sha256": "7496161fbe04a193c9bbd88cc62ad7d3c9c92e48ca1c3587784661dff3d8d853",
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/system_doctor.bat"
+    },
+    {
+      "path": "programs/committee/tools/fake_hwp.py",
+      "sha256": "2a523e3ef1cf59753c4588e49d3268cdddfb3a77b71853f3ac199c12759a2f76",
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/tools/fake_hwp.py"
+    },
+    {
+      "path": "programs/committee/tools/make_mock_master.py",
+      "sha256": "1f9143af337f17400cac25c9436ca1f3a117be123d2acbf73ee9e82a5d33ce58",
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/tools/make_mock_master.py"
+    },
+    {
+      "path": "programs/committee/tools/validate_com_logic.py",
+      "sha256": "d5cbcb664d2611e36addb5e3c27bd7d408053c57891eada53ea59ac46b15008e",
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/tools/validate_com_logic.py"
+    },
+    {
+      "path": "programs/committee/tools/validate_hwp_reference_style.py",
+      "sha256": "579ab0ae88631ed04ac3697f02ec5ac60bb5da45d993f280dbcae5242c810209",
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/tools/validate_hwp_reference_style.py"
+    },
+    {
+      "path": "programs/committee/tools/validate_hwp_style.py",
+      "sha256": "f80edadc508e8ac8bcb47e320f02f45180ab1f616c878d53c1adfa3afe0f2444",
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/tools/validate_hwp_style.py"
+    },
+    {
+      "path": "programs/committee/tools/validate_path_handling.py",
+      "sha256": "4fe19adcfcf03dcad98db3c0ea742f3a9282f20bd7be19c9223f39927bc06629",
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/tools/validate_path_handling.py"
+    },
+    {
+      "path": "programs/committee/tools/validate_plan.py",
+      "sha256": "d07aa0f122153c1abbe430cabce142df277ba9e90db09cbf7de350911f585ee4",
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/tools/validate_plan.py"
+    },
+    {
+      "path": "programs/committee/tools/validate_release.py",
+      "sha256": "6841709b0fd313951d1267fadfd2ea909690dc1f7074a924da7f2205a3918bb5",
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/tools/validate_release.py"
+    },
+    {
+      "path": "programs/committee/validate_release.bat",
+      "sha256": "f918e971e9747b847400f64fc7daaa42a0ae04413542d85d44ccb110d18287db",
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/validate_release.bat"
+    },
+    {
+      "path": "programs/committee/한글양식_안내.txt",
+      "sha256": "76f0ac91815cb94809bcdefe936eee0b399e39b55c616789a4571a409e75b397",
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/한글양식_안내.txt"
+    },
+    {
+      "path": "programs/meeting-hwp/ARCHITECTURE.txt",
+      "sha256": "37080a9f06d62f967b5bf7262b556d2ddb82e0814957eb49eb2c0645659062c4",
+      "source": "meeting-hwp/ARCHITECTURE.txt"
+    },
+    {
+      "path": "programs/meeting-hwp/README.txt",
+      "sha256": "4c95159202180b0e8ec22e9b2b3320918f89237a883ef3c30827c516986182ea",
+      "source": "meeting-hwp/README.txt"
+    },
+    {
+      "path": "programs/meeting-hwp/RELEASE_CHECK.txt",
+      "sha256": "2df25a93cfed1b2dbac09da0bd88552d01d8c05ba9dfafd930bb45544832dc4f",
+      "source": "meeting-hwp/RELEASE_CHECK.txt"
+    },
+    {
+      "path": "programs/meeting-hwp/SECURITY_MODULE_SETUP.txt",
+      "sha256": "af994774b3da250df2a032656ba85a8f2b48d2d2bb5e98645961f0480b47feb6",
+      "source": "meeting-hwp/SECURITY_MODULE_SETUP.txt"
+    },
+    {
+      "path": "programs/meeting-hwp/VERSION.txt",
+      "sha256": "d4d4151542d57bda5beb57ff8fb51f5ffbdba30b3755060db00ff144eda5d250",
+      "source": "meeting-hwp/VERSION.txt"
+    },
+    {
+      "path": "programs/meeting-hwp/date_normalization_check.py",
+      "sha256": "580e4cd5071b7a09941076f24740a176ef70550363a449bd57947057af0c90d3",
+      "source": "meeting-hwp/date_normalization_check.py"
+    },
+    {
+      "path": "programs/meeting-hwp/hwp_meeting_merger.py",
+      "sha256": "64865be3538dc96451cb8c34c4a087a4829b857d5ff55dfe8e923b03500fd228",
+      "source": "meeting-hwp/hwp_meeting_merger.py"
+    },
+    {
+      "path": "programs/meeting-hwp/hwp_merge_engine.ps1",
+      "sha256": "9f8f790b89bbf7888faccead969fb664a2a7bbb28609cc6183b674b04c39c0c9",
+      "source": "meeting-hwp/hwp_merge_engine.ps1"
+    },
+    {
+      "path": "programs/meeting-hwp/install_pywin32_online.bat",
+      "sha256": "aa8814e0a0342d190a38b01fdf89444036f2c759a6f3edcb5b779c86f529c144",
+      "source": "meeting-hwp/install_pywin32_online.bat"
+    },
+    {
+      "path": "programs/meeting-hwp/install_windows.bat",
+      "sha256": "9dff2bf445f8ffdb43b8a30c76bcb37601aeadce784b0262b1390b039615a05a",
+      "source": "meeting-hwp/install_windows.bat"
+    },
+    {
+      "path": "programs/meeting-hwp/release_check.py",
+      "sha256": "1d64b1ca2adf2d35f4ef9604642464bee845519a42cd61036f2a5894a12db068",
+      "source": "meeting-hwp/release_check.py"
+    },
+    {
+      "path": "programs/meeting-hwp/run_windows.bat",
+      "sha256": "77a7bb3e21758124db0802677a1efd0d59090ab2dacf5d0b25894b27c4cb07ae",
+      "source": "meeting-hwp/run_windows.bat"
+    },
+    {
+      "path": "programs/meeting-hwp/security_support.py",
+      "sha256": "66e38f25eb1bc9f2ccdce3d0b2dbc164659abb5be9e1a09ed52e33620965497c",
+      "source": "meeting-hwp/security_support.py"
+    },
+    {
+      "path": "programs/meeting-hwp/smart_rules.py",
+      "sha256": "4a2d5c76566beb134a5ac53e141962631a33dd2aa93f275d431950f6200585b9",
+      "source": "meeting-hwp/smart_rules.py"
+    },
+    {
+      "path": "programs/patent-holdings/patent_classification_logic_v2.0.md",
+      "sha256": "23c2dcadbc307a34d046e776527b5b206bbbabcd6b392b0e537b870258fe71e3",
+      "source": "patent-holdings/patent_classification_logic_v2.0.md",
+      "business_pattern_baseline": {
+        "특허 관리번호 형식": "a42f5d2d2ed24b015394a94bdfbc24ef1248aa8aca15bf8e4c8da4ff5c05ce2b"
+      }
+    },
+    {
+      "path": "programs/patent-holdings/patent_yearend_classifier_v5.3.py",
+      "sha256": "be44b9bff1fac9c8dcc373e692024205fe038b2bb811405051897a57c0e96976",
+      "source": "patent-holdings/patent_yearend_classifier_v5.3.py",
+      "business_pattern_baseline": {
+        "특허 관리번호 형식": "d2ed588a17b425ef1290431a7babce3d94d834952c1387f769fcb31d5ef68220"
+      }
+    },
+    {
+      "path": "knowledge/kriss_master_knowledge_v1.3.md",
+      "sha256": "b1029ae8beb74532fe214925d90b1325a1565ad2510082fcafce9aa3e3bef3ec",
+      "source": "kriss_master_knowledge_v1.3.md"
+    },
+    {
+      "path": "knowledge/kriss_knowledge_pack_v1.2.json",
+      "sha256": "d9e9ce0119f114e7bce09d4f28f236f12dca9ca4082e3f3158b70c37ebc73631",
+      "source": "kriss_knowledge_pack_v1.2.json"
+    }
+  ],
+  "not_imported": [
+    {
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/BUILD_INFO.json",
+      "reason": "packaging bookkeeping for old ZIP retained at source"
+    },
+    {
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/build_release_metadata.bat",
+      "reason": "packaging bookkeeping for old ZIP retained at source"
+    },
+    {
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/docs/AI_HANDOFF_PROMPT.md",
+      "reason": "historical report or overlapping maintenance document retained in original ZIP"
+    },
+    {
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/docs/AI_MAINTENANCE_PLAYBOOK.md",
+      "reason": "historical report or overlapping maintenance document retained in original ZIP"
+    },
+    {
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/docs/golden/2025Q4_facts.json",
+      "reason": "historical report or overlapping maintenance document retained in original ZIP"
+    },
+    {
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/docs/golden/2026Q1_facts.json",
+      "reason": "historical report or overlapping maintenance document retained in original ZIP"
+    },
+    {
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/docs/golden/2026Q1_tree.txt",
+      "reason": "historical report or overlapping maintenance document retained in original ZIP"
+    },
+    {
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/docs/golden/2026Q2_facts.json",
+      "reason": "historical report or overlapping maintenance document retained in original ZIP"
+    },
+    {
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/docs/golden/2026Q2_tree.txt",
+      "reason": "historical report or overlapping maintenance document retained in original ZIP"
+    },
+    {
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/docs/golden/2026Q2_v03_regression_summary.json",
+      "reason": "historical report or overlapping maintenance document retained in original ZIP"
+    },
+    {
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/docs/golden/2026Q2_v04_regression_report.json",
+      "reason": "historical report or overlapping maintenance document retained in original ZIP"
+    },
+    {
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/docs/golden/2026Q2_v06_regression_report.json",
+      "reason": "historical report or overlapping maintenance document retained in original ZIP"
+    },
+    {
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/docs/GUI_DESIGN.md",
+      "reason": "historical report or overlapping maintenance document retained in original ZIP"
+    },
+    {
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/docs/MAINTENANCE_BLUEPRINT.md",
+      "reason": "historical report or overlapping maintenance document retained in original ZIP"
+    },
+    {
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/docs/PORTAL_AUTOMATION_SPEC.md",
+      "reason": "historical report or overlapping maintenance document retained in original ZIP"
+    },
+    {
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/docs/PORTAL_CONTRACT_VALIDATION_2026Q2.json",
+      "reason": "historical report or overlapping maintenance document retained in original ZIP"
+    },
+    {
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/docs/PORTAL_DOM_FACTS.json",
+      "reason": "historical report or overlapping maintenance document retained in original ZIP"
+    },
+    {
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/docs/PORTAL_SNAPSHOT_VALIDATION_2026-08-14.json",
+      "reason": "historical report or overlapping maintenance document retained in original ZIP"
+    },
+    {
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/docs/VALIDATIONS.md",
+      "reason": "historical report or overlapping maintenance document retained in original ZIP"
+    },
+    {
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/docs/VALIDATION_2026Q3_V06.json",
+      "reason": "historical report or overlapping maintenance document retained in original ZIP"
+    },
+    {
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/docs/VALIDATION_2026Q3_V061_FIXES.json",
+      "reason": "historical report or overlapping maintenance document retained in original ZIP"
+    },
+    {
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/docs/VALIDATION_V063_LOCAL.json",
+      "reason": "historical report or overlapping maintenance document retained in original ZIP"
+    },
+    {
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/docs/VALIDATION_V066_LOCAL.json",
+      "reason": "historical report or overlapping maintenance document retained in original ZIP"
+    },
+    {
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/docs/VALIDATION_V067_LOCAL.json",
+      "reason": "historical report or overlapping maintenance document retained in original ZIP"
+    },
+    {
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/docs/WINDOWS_EXCEL_RELEASE_SAFETY_PROMPT.md",
+      "reason": "historical report or overlapping maintenance document retained in original ZIP"
+    },
+    {
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/MAINTENANCE_STATE.json",
+      "reason": "packaging bookkeeping for old ZIP retained at source"
+    },
+    {
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/RELEASE_NOTES.md",
+      "reason": "packaging bookkeeping for old ZIP retained at source"
+    },
+    {
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/SOURCE_MANIFEST.json",
+      "reason": "packaging bookkeeping for old ZIP retained at source"
+    },
+    {
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/tampermonkey/연차유지료 지출발의 자동화(최종)0.8.3.txt",
+      "reason": "same normalized source as scripts/annualfee-expense.user.js"
+    },
+    {
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/tools/generate_source_manifest.py",
+      "reason": "packaging bookkeeping for old ZIP retained at source"
+    },
+    {
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/tools/validate_release.py",
+      "reason": "packaging bookkeeping for old ZIP retained at source"
+    },
+    {
+      "source": "tampermonkey/[IPMS] 검색 개선.options.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/[IPMS] 검색 개선.storage.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/[KRISS Portal] 메인 화면 테마.options.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/[KRISS Portal] 메인 화면 테마.storage.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/[KRISS Portal] 업무 대시보드.options.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/[KRISS Portal] 업무 대시보드.storage.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/[KRISS] 지출발의 도우미.options.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/[KRISS] 지출발의 도우미.storage.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/[메일] 디자인 및 기능 개선 (최신).options.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/[메일] 디자인 및 기능 개선 (최신).storage.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/[연차유지료] 지출발의 자동화(최종).options.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/[연차유지료] 지출발의 자동화(최종).storage.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/[특허] 통합검색.options.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/[특허] 통합검색.storage.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/[특허] 팔레트 (Ctrl+Space).options.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/[특허] 팔레트 (Ctrl+Space).storage.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/KRISS IPMS - V21 Quick Panel Adapter.options.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/KRISS IPMS - V21 Quick Panel Adapter.storage.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/KRISS IPMS - 상세 팝업 단축키.options.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/KRISS IPMS - 상세 팝업 단축키.storage.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/KRISS Patent Stats Extractor (특허 통계추출).options.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/KRISS Patent Stats Extractor (특허 통계추출).storage.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/KRISS 개인저작물 논문 대조 Helper.options.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/KRISS 개인저작물 논문 대조 Helper.storage.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/KRISS 공동출원 Helper.options.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/KRISS 공동출원 Helper.storage.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/KRISS 근무시간 초과·부족시간 표시.options.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/KRISS 근무시간 초과·부족시간 표시.storage.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/KRISS 메일 가독성 개선 + 답장-전달 강조.options.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/KRISS 메일 가독성 개선 + 답장-전달 강조.storage.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/KRISS 보조원장(기술이전) 지재권 집행내역 정제 추출.options.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/KRISS 보조원장(기술이전) 지재권 집행내역 정제 추출.storage.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/KRISS 요구자료 콘솔 — 포털 바로가기.options.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/KRISS 요구자료 콘솔 — 포털 바로가기.storage.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/KRISS 요구자료 콘솔 — 항목 어댑터.options.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/KRISS 요구자료 콘솔 — 항목 어댑터.storage.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/KRISS 요구자료 콘솔.options.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/KRISS 요구자료 콘솔.storage.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/KRISS 인사평가 논문실적 2026 — 최종본.options.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/KRISS 인사평가 논문실적 2026 — 최종본.storage.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/KRISS 입력 Helper.options.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/KRISS 입력 Helper.storage.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/KRISS 정찰기 v8.0.3 · 화면·자원·업무 기록.options.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/KRISS 정찰기 v8.0.3 · 화면·자원·업무 기록.storage.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/KRISS 지재권 대조 Helper.options.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/KRISS 지재권 대조 Helper.storage.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/KRISS 팝업·창 관리자.options.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/KRISS 팝업·창 관리자.storage.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "tampermonkey/Tampermonkey.global.json",
+      "reason": "browser state retained in original backup"
+    },
+    {
+      "source": "quick-panel/v21-pro-shortcut-studio-v25-quick-panel-package/KRISS-IPMS-V21-Quick-Panel-Adapter-v25.user.js",
+      "reason": "adapter source kept in scripts; backup @match retained"
+    },
+    {
+      "source": "quick-panel/v21-pro-shortcut-studio-v25-quick-panel-package/v21-companion-history.jsonl",
+      "reason": "personal runtime preferences/history; initialized locally"
+    },
+    {
+      "source": "quick-panel/v21-pro-shortcut-studio-v25-quick-panel-package/v21-companion-known-triggers.txt",
+      "reason": "personal runtime preferences/history; initialized locally"
+    },
+    {
+      "source": "quick-panel/v21-pro-shortcut-studio-v25-quick-panel-package/v21-companion-l2-layout.txt",
+      "reason": "personal runtime preferences/history; initialized locally"
+    },
+    {
+      "source": "quick-panel/v21-pro-shortcut-studio-v25-quick-panel-package/v21-companion-layout.txt",
+      "reason": "personal runtime preferences/history; initialized locally"
+    },
+    {
+      "source": "quick-panel/v21-pro-shortcut-studio-v25-quick-panel-package/v21-companion-usage.ini",
+      "reason": "personal runtime preferences/history; initialized locally"
+    },
+    {
+      "source": "markpro-spec/special_patents_watchlist.csv",
+      "reason": "operational history/watchlist; raw and golden supplied later"
+    },
+    {
+      "source": "markpro-spec/special_patents_history.csv",
+      "reason": "operational history/watchlist; raw and golden supplied later"
+    },
+    {
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/VALIDATION_2026_1.md",
+      "reason": "historical report or old release packaging retained in ZIP"
+    },
+    {
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/VALIDATION_2026_2.md",
+      "reason": "historical report or old release packaging retained in ZIP"
+    },
+    {
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/VALIDATION_v0_1_9_GRAPH.md",
+      "reason": "historical report or old release packaging retained in ZIP"
+    },
+    {
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/VALIDATION_v0_2_0_HWPFILL.md",
+      "reason": "historical report or old release packaging retained in ZIP"
+    },
+    {
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/VALIDATION_v0_2_1_HWPFILL.md",
+      "reason": "historical report or old release packaging retained in ZIP"
+    },
+    {
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/VALIDATION_v0_2_1_ONECLICK_HWP.md",
+      "reason": "historical report or old release packaging retained in ZIP"
+    },
+    {
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/VALIDATION_v0_2_1_UI.md",
+      "reason": "historical report or old release packaging retained in ZIP"
+    },
+    {
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/VALIDATION_v0_2_2.md",
+      "reason": "historical report or old release packaging retained in ZIP"
+    },
+    {
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/VALIDATION_v0_2_3.md",
+      "reason": "historical report or old release packaging retained in ZIP"
+    },
+    {
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/VALIDATION_v0_2_4.md",
+      "reason": "historical report or old release packaging retained in ZIP"
+    },
+    {
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/VALIDATION_v0_2_5.md",
+      "reason": "historical report or old release packaging retained in ZIP"
+    },
+    {
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/VALIDATION_v0_2_6.md",
+      "reason": "historical report or old release packaging retained in ZIP"
+    },
+    {
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/VALIDATION_v0_2_7.md",
+      "reason": "historical report or old release packaging retained in ZIP"
+    },
+    {
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/VALIDATION_v0_2_8.md",
+      "reason": "historical report or old release packaging retained in ZIP"
+    },
+    {
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/VALIDATION_v0_2_9.md",
+      "reason": "historical report or old release packaging retained in ZIP"
+    },
+    {
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/tools/build_release.py",
+      "reason": "historical report or old release packaging retained in ZIP"
+    },
+    {
+      "source": "patent-holdings/patent_yearend_report_2022_2026H1_v4.0.xlsx",
+      "reason": "prior output; not designated golden by user"
+    },
+    {
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/config/dept_map_2026_1.csv",
+      "reason": "bundled operational records; restore locally from original committee ZIP, not a newly approved golden"
+    },
+    {
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/resources/hwp_templates/2026_1/붙임1.(보고안건1) 25년 4분기~26년 1분기 특허 국내·외 출원 현황 보고(안) (1).hwp",
+      "reason": "bundled operational records; restore locally from original committee ZIP, not a newly approved golden"
+    },
+    {
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/resources/hwp_templates/2026_1/붙임2.(보고안건2) 25년 4분기~26년 1분기 특허 국내·외 등록 현황 보고(안).hwp",
+      "reason": "bundled operational records; restore locally from original committee ZIP, not a newly approved golden"
+    },
+    {
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/resources/hwp_templates/2026_1/붙임5.(심의안건1) 25년 4분기~26년 1분기 국외특허 출원 심의 최종승인(안).hwp",
+      "reason": "bundled operational records; restore locally from original committee ZIP, not a newly approved golden"
+    },
+    {
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/resources/hwp_templates/2026_1/붙임6.(심의안건2) 26년 2분기 특허 포기 승인(안).hwp",
+      "reason": "bundled operational records; restore locally from original committee ZIP, not a newly approved golden"
+    },
+    {
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/resources/hwp_templates/2026_1/붙임7. 2026년도 제1차 직무발명관리위원회 개최 운영(안).hwp",
+      "reason": "bundled operational records; restore locally from original committee ZIP, not a newly approved golden"
+    },
+    {
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/resources/hwp_templates/2026_1/붙임8. 2026년도 제1차 직무발명관리위원회 서면심의 양식.hwp",
+      "reason": "bundled operational records; restore locally from original committee ZIP, not a newly approved golden"
+    },
+    {
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/resources/hwp_templates/2026_2/(양식) 2026년도 제2차 직무발명관리위원회 서면결의서.hwp",
+      "reason": "bundled operational records; restore locally from original committee ZIP, not a newly approved golden"
+    },
+    {
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/resources/hwp_templates/2026_2/붙임1.(보고안건1) 26년 2분기 특허 국내·외 출원 현황 보고(안)..hwp",
+      "reason": "bundled operational records; restore locally from original committee ZIP, not a newly approved golden"
+    },
+    {
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/resources/hwp_templates/2026_2/붙임2.(보고안건2) 26년 2분기 특허 국내·외 등록 현황 보고(안)..hwpx",
+      "reason": "bundled operational records; restore locally from original committee ZIP, not a newly approved golden"
+    },
+    {
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/resources/hwp_templates/2026_2/붙임5.(심의안건1) 26년 2분기 국외특허 출원 심의 최종승인(안).hwp",
+      "reason": "bundled operational records; restore locally from original committee ZIP, not a newly approved golden"
+    },
+    {
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/resources/hwp_templates/2026_2/붙임6.(심의안건2) 26년 3분기 특허 포기 승인(안).hwp",
+      "reason": "bundled operational records; restore locally from original committee ZIP, not a newly approved golden"
+    },
+    {
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/resources/hwp_templates/2026_2/붙임7. 2026년 제2차 직무발명관리위원회 개최(안).hwpx",
+      "reason": "bundled operational records; restore locally from original committee ZIP, not a newly approved golden"
+    },
+    {
+      "source": "committee/KRISS_Committee_Automation_v0.2.9/tools/golden_2026_1.json",
+      "reason": "bundled operational records; restore locally from original committee ZIP, not a newly approved golden"
+    }
+  ]
+}
