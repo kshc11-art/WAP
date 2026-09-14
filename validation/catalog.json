@@ -325,13 +325,13 @@
     },
     {
       "path": "scripts/portal-dashboard.user.js",
-      "sha256": "8ce514a078fa5333f035092f759c52aac28b650d0f025f400b9bff612d7b08b2",
+      "sha256": "947653aeb8522e0b67bc90819459e3b31a69490a1a59076098c0d2fc1306e7ac",
       "source": "tampermonkey/[KRISS Portal] 업무 대시보드.user.js",
       "business_pattern_baseline": {
         "특허 관리번호 형식": "262d5330161da2bfd5407e0695d881acc16ae818d47bf56395abbef3867ea8c0"
       },
       "import_sha256": "5ed817e3c117a34e4f01571b3eb84fe6310d059406edefc540e5ef1c9ef3ef40",
-      "repository_change": "2026-09-14: current PPS / verified exemption filing instructions; office submission confirmation; result review; pending-source enrichment. Internal portal verification pending. Same version 1.26.3: task receipt02 and uninvoiced expense receipt02 appear as actionable follow-up."
+      "repository_change": "2026-09-14: current PPS / verified exemption filing instructions; office submission confirmation; result review; pending-source enrichment. Internal portal verification pending. Same version 1.26.3: task receipt02 and uninvoiced expense receipt02 appear as actionable follow-up. Loading correction, same version: filing queries and display honor selected period (default 3 months); remove six full-period reads and empty-result full fetch."
     },
     {
       "path": "scripts/expense-helper.user.js",

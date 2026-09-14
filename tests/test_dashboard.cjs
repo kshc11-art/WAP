@@ -301,8 +301,8 @@ function inPeriod(row) {
 }
 
 for (const routeKind of ['fileInstruction', 'fileConfirmation', 'fileResultReview']) {
-  test('old actionable ' + routeKind + ' stays visible', () => {
-    assert.equal(inPeriod({stage: 'file', track: 'action', routeKind, requestDate: '20200101'}), true);
+  test('old actionable ' + routeKind + ' follows the selected period', () => {
+    assert.equal(inPeriod({stage: 'file', track: 'action', routeKind, requestDate: '20200101'}), false);
   });
   test('future actionable ' + routeKind + ' stays excluded', () => {
     assert.equal(inPeriod({stage: 'file', track: 'action', routeKind, requestDate: '20260915'}), false);
@@ -321,75 +321,12 @@ test('period boundaries remain inclusive', () => {
   assert.equal(inPeriod({stage: 'file', track: 'progress', requestDate: '20260614'}), true);
   assert.equal(inPeriod({stage: 'file', track: 'progress', requestDate: '20260613'}), false);
   assert.equal(inPeriod({stage: 'file', track: 'progress', requestDate: '20260914'}), true);
+  assert.equal(inPeriod({stage: 'file', track: 'action', routeKind: 'fileInstruction', requestDate: '20260614'}), true);
+  assert.equal(inPeriod({stage: 'file', track: 'action', routeKind: 'fileInstruction', requestDate: '20260613'}), false);
 });
 
-test('old BPM request date cannot hide an otherwise undated actionable filing', () => {
-  assert.equal(inPeriod({stage: 'file', track: 'action', routeKind: 'fileResultReview', myWork: {requestDate: '20200101'}}), true);
-});
-
-function merge(parts) {
-  const context = vm.createContext({parts});
-  vm.runInContext(declaration('pdMergeFilingSources'), context);
-  return vm.runInContext('pdMergeFilingSources(parts)', context);
-}
-
-test('filing source overlap merges once and uses the later targeted row', () => {
-  const result = merge([
-    {rows: [filing({apvStat: '03'})]},
-    {rows: []},
-    {rows: [filing({apvStat: '04', rqstApvStat: '04'})]},
-  ]);
-  assert.equal(result.rows.length, 1);
-  assert.equal(result.n, 1);
-  assert.equal(result.rows[0].rqstApvStat, '04');
-  assert.deepEqual(Array.from(result.supplementErrors), []);
-});
-
-test('a result-review number assigned between reads replaces the earlier same filing row', () => {
-  const result = merge([
-    {rows: [filing({aplyRsltRqstNo: '', apvStat: '05'})]},
-    {rows: []},
-    {rows: [filing({aplyRsltRqstNo: 'TEST_REVIEW_B', apvStat: '06'})]},
-  ]);
-  assert.equal(result.rows.length, 1);
-  assert.equal(result.rows[0].aplyRsltRqstNo, 'TEST_REVIEW_B');
-  assert.equal(result.rows[0].apvStat, '06');
-});
-
-test('different filing request identities remain separate for the same application', () => {
-  const result = merge([{rows: [filing()]}, {rows: []}, {rows: [filing({rqstNo: '202609-904'})]}]);
-  assert.equal(result.rows.length, 2);
-});
-
-test('failure of all three filing reads stays a failure, not an empty successful list', () => {
-  const result = merge([
-    {rows: null, err: 'Synthetic period-read failure'},
-    {rows: null, err: 'Synthetic pending-read failure'},
-    {rows: null, err: 'Synthetic review-read failure'},
-  ]);
-  assert.equal(result.rows, null);
-  assert.ok(result.err);
-});
-
-test('partial supplementary failure retains successful rows and warns', () => {
-  const result = merge([{rows: [filing()]}, {rows: null, err: 'Synthetic unavailable'}, {rows: []}]);
-  assert.equal(result.rows.length, 1);
-  assert.ok(result.supplementErrors.some(message => /조회 실패/.test(message)));
-});
-
-test('known and possible truncation both remain visible in merge warnings', () => {
-  const result = merge([
-    {rows: [filing()], truncated: true},
-    {rows: [], maybeTruncated: true},
-    {rows: []},
-  ]);
-  assert.equal(result.rows.length, 1);
-  assert.equal(result.supplementErrors.filter(message => /일부 수신/.test(message)).length, 2);
-});
-
-test('unidentified filing rows are retained separately rather than collapsed', () => {
-  const result = merge([{rows: [{apvStat: '04'}]}, {rows: [{apvStat: '10'}]}, {rows: []}]);
-  assert.equal(result.rows.length, 2);
+test('old BPM request date also follows the selected period for an undated actionable filing', () => {
+  assert.equal(inPeriod({stage: 'file', track: 'action', routeKind: 'fileResultReview', myWork: {requestDate: '20200101'}}), false);
 });
 
 function resultInProgress() {
@@ -455,55 +392,76 @@ async function fetchSources(options = {}) {
   const requestContext = {fixture: true};
   const coreDeclaration = source.match(/  const CORE_SOURCES = [^\n]+/);
   assert.ok(coreDeclaration);
+  class FixtureDate extends Date {
+    constructor(...args) {super(...(args.length ? args : [2026, 8, 14]));}
+    static now() {return new Date(2026, 8, 14).getTime();}
+  }
   const context = vm.createContext({
+    Date: FixtureDate,
     DIAG: [],
     requestContext,
-    RUNTIME: {isCurrent: () => options.current !== false},
-    callApi: async (name, body, ctx) => {
-      calls.push({name, body, ctx});
-      if (name !== 'file') return {rows: name === 'exp' ? [{}] : [], n: name === 'exp' ? 1 : 0};
-      if (!body) return {rows: [filing()], n: 1};
-      const selector = body.apvStat || 'confirmation';
-      if (selector === options.failedSelector) return {rows: null, n: 0, err: 'Synthetic targeted read failure'};
-      return {rows: [filing({rqstNo: 'TEST_FILING_' + selector, apvStat: body.apvStat || '04'})], n: 1};
+    periodMonths: options.months || 3,
+    K: {debug: 'test.debug'}, gmGet: (_key, fallback) => fallback,
+    RUNTIME: {isCurrent: () => true},
+    // Only transport is mocked. Production API defaults, callApi response
+    // handling, and the complete source-fetch coordinator execute together.
+    httpPost: async (url, body, signal) => {
+      calls.push({url, body, signal});
+      const isFile = url === '/pms/iprs/aply/selectAplyRqstList.json';
+      if (isFile && options.failure) throw new Error('Synthetic filing read failure');
+      const rows = isFile ? (options.empty ? [] : [filing()]) : [{apvStat: '01'}];
+      return {status: 200, text: JSON.stringify({rows, total: rows.length})};
     },
   });
-  vm.runInContext(coreDeclaration[0] + '\n' + declaration('pdMergeFilingSources') + '\n' + declaration('fetchIpmsSources'), context);
+  const code = [
+    coreDeclaration[0],
+    section('  const API = {', '  function pageBody('),
+    section('  const SOURCE_KEYS = {', '  function validateRows('),
+    ...['pageBody', 'fmtYmd8', 'shiftMonthsClamped', 'expPeriod', 'periodMin', 'extractRows', 'readTotal', 'validateRows', 'callApi', 'fetchIpmsSources'].map(name => declaration(name)),
+  ].join('\n');
+  vm.runInContext(code, context);
   const result = await vm.runInContext('fetchIpmsSources(requestContext)', context);
   return {result, calls, requestContext};
 }
 
-test('all six targeted filing reads run even when the base period read already has data', async () => {
-  const {result, calls, requestContext} = await fetchSources();
-  const filingCalls = calls.filter(call => call.name === 'file');
-  assert.equal(filingCalls.length, 7);
-  assert.equal(filingCalls.filter(call => call.body === null).length, 1);
-  const extra = filingCalls.filter(call => call.body !== null);
-  assert.deepEqual(extra.map(call => call.body.apvStat || (call.body.confirmWork1 === 'Y' ? 'confirmation' : '?')).sort(), ['05', '06', '07', '08', '10', 'confirmation']);
-  extra.forEach(call => {
-    assert.equal(call.body.rqstCls, '03');
-    assert.equal(call.body.rqstStrDt, '');
-    assert.equal(call.body.rqstEndDt, '');
-    assert.equal(call.body.confirmWork2, '');
-    assert.equal(call.body.confirmWork3, '');
-    assert.equal(call.body.confirmWork4, '');
-    assert.equal(call.ctx, requestContext);
-    if (call.body.apvStat) assert.equal(call.body.confirmWork1, '');
-  });
-  assert.equal(result.file.rows.length, 7, 'Targeted results must be returned to buildActions, not merely fetched');
-  assert.deepEqual(Array.from(result.file.supplementErrors), []);
+function filingCalls(calls) {return calls.filter(call => call.url === '/pms/iprs/aply/selectAplyRqstList.json');}
+
+test('filing is fetched once using the default three-month application-date range', async () => {
+  const {result, calls} = await fetchSources();
+  const requests = filingCalls(calls);
+  assert.equal(requests.length, 1);
+  assert.equal(requests[0].body.rqstCls, '03');
+  assert.equal(requests[0].body.rqstStrDt, '20260614');
+  assert.equal(requests[0].body.rqstEndDt, '20260914');
+  assert.equal(result.file.rows.length, 1);
+  assert.equal(result.file.err, null);
 });
 
-test('targeted result-review failure preserves the other six filing sources and identifies the failed phase', async () => {
-  const {result} = await fetchSources({failedSelector: '06'});
-  assert.equal(result.file.rows.length, 6);
-  assert.equal(result.file.supplementErrors.length, 1);
-  assert.match(result.file.supplementErrors[0], /검토06.*조회 실패/);
+test('an empty filing range does not trigger a whole-history fallback', async () => {
+  const {result, calls} = await fetchSources({empty: true});
+  const requests = filingCalls(calls);
+  assert.equal(requests.length, 1);
+  assert.equal(requests[0].body.rqstStrDt, '20260614');
+  assert.equal(requests[0].body.rqstEndDt, '20260914');
+  assert.equal(result.file.rows.length, 0);
+  assert.equal(result.file.err, null);
+  assert.equal(result.file.valid, true);
 });
 
-test('cancelled source context does not dispatch supplementary filing reads', async () => {
-  const {result, calls} = await fetchSources({current: false});
-  assert.equal(calls.filter(call => call.name === 'file').length, 1);
+test('filing request failure remains an error without a wider-range retry', async () => {
+  const {result, calls} = await fetchSources({failure: true});
+  assert.equal(filingCalls(calls).length, 1);
+  assert.equal(result.file.rows, null);
+  assert.equal(result.file.valid, false);
+  assert.match(result.file.err, /Synthetic filing read failure/);
+});
+
+test('a user-selected six-month range changes the actual filing request dates', async () => {
+  const {result, calls} = await fetchSources({months: 6});
+  const requests = filingCalls(calls);
+  assert.equal(requests.length, 1);
+  assert.equal(requests[0].body.rqstStrDt, '20260314');
+  assert.equal(requests[0].body.rqstEndDt, '20260914');
   assert.equal(result.file.rows.length, 1);
 });
 

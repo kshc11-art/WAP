@@ -13,9 +13,10 @@
 // @run-at       document-idle
 // ==/UserScript==
 
-/* v1.26.3: 출원지시전 보강 조회, 현재 PPS 완료·확인된 비대상 출원지시 표시,
+/* v1.26.3: 현재 PPS 완료·확인된 비대상 출원지시 표시,
  * 사무소 제출 최종확인·출원결과 검토 분리. 첨부 출원관리 화면 계약과 합성 회귀 검증.
  * 같은 버전 추가 수정: 업무요청·미발행 청구서 접수02를 처리할 업무에 포함.
+ * 출원은 선택 기간(기본 3개월)으로 조회·표시. 전기간 보강 및 0건 전기간 재조회 제거.
  * 내부망 실제 실행 및 팝업 처리 완료는 별도 확인 필요. */
 
 /*
@@ -1171,7 +1172,7 @@
       task: { url: '/pms/iprs/etcTask/selectEtcTaskRqstList.json', extra: () => expPeriod(), dateFallback: true },
       apply: { url: '/pms/res/intellppty/selectIntellpptyList.json', extra: () => periodMin(7), dateFallback: true },   // 하한 7개월: 180일 창 로직 보전
       pps: { url: '/pms/iprs/pps/selectPpsList.json' },   // 전량 유지: 소량(733) + 오래된 미완료 재촉 보전
-      file: { url: '/pms/iprs/aply/selectAplyRqstList.json', extra: () => expPeriod(), dateFallback: true },
+      file: { url: '/pms/iprs/aply/selectAplyRqstList.json', extra: () => Object.assign(expPeriod(), { rqstCls: '03' }) }, // 선택 기간만 조회, 0건이어도 전기간 재조회하지 않는다
       reg: { url: '/pms/iprs/intellReg/selectIntellRegRqstList.json', extra: () => expPeriod(), dateFallback: true },
       // 청구서 목록은 검색폼 파라미터(신청일 범위 등)에 의존(청구서.txt 실측). 검색폼과 동일하게 전송.
       // 청구서: 실제 요청 형식 재현(F12 실측) — 날짜 yyyyMMdd + 빈 검색조건. 날짜 없이/하이픈형식이면 0건.
@@ -1286,7 +1287,7 @@
     debug: 'pd_debug_v1',      // 원문 응답은 이 값이 true일 때만 콘솔에 노출
     who: 'pd_who_v1',          // v1.25.3: 주발명자·특허사무소 표시 여부(기본 true)
     fgnfile: 'pd_fgnfile_v1',  // v1.25.9: 국외 신청의 출원지시 대기 표시 여부(기본 true)
-    cache: 'pd_cache_v43',     // 1.26.3 유지: 접수02 재분류 — 이전 판정 캐시 폐기
+    cache: 'pd_cache_v44',     // 1.26.3 유지: 전기간 출원 조회·기간 예외를 제거한 모델로 교체
   };
   // v1.22.0: 키보드 내비·연속 열기 상태
   const PD_KB = { last: null, focusPending: null };
@@ -1423,8 +1424,6 @@
       return workDate ? pdInWorkPeriod({requestDate:workDate,stage:a.stage,track:a.track,baseTrack:a.baseTrack},now) : true;
     }
     const n=now || new Date();
-    // 미완료 출원 처리건은 과거 신청/지시일 때문에 숨기지 않는다. 미래일은 계속 제외.
-    if(a.stage==='file' && (a.track || a.baseTrack)==='action') return date<=fmtYmd8(n);
     return date>=fmtYmd8(shiftMonthsClamped(n,-periodMonths)) && date<=fmtYmd8(n);
   }
   function pdScopedActions() { return ((MODEL && MODEL.acts) || []).filter((a)=>pdInWorkPeriod(a)); }
@@ -2878,7 +2877,7 @@
       '<div class="pd-menu-wrap"><button class="pdi" data-a="menu" aria-haspopup="true" aria-expanded="false" title="설정">⋯</button>' +
       '<div class="pd-menu" id="pd-menu" hidden>' +
       '<div class="pd-mh">조회</div>' +
-      '<div class="pd-period-row" title="미완료 출원 처리건은 기간과 관계없이 표시합니다."><span>조회 기간</span><select id="pd-period">' +
+      '<div class="pd-period-row" title="출원을 포함해 선택한 기간의 업무를 조회·표시합니다."><span>조회 기간</span><select id="pd-period">' +
       [1, 2, 3, 6, 12].map((m) => '<option value="' + m + '"' + (m === periodMonths ? ' selected' : '') + '>' + m + '개월</option>').join('') +
       '</select></div>' +
       '<button class="pd-mi" data-a="purge">캐시 비우고 다시 불러오기</button>' +
@@ -3471,7 +3470,7 @@
     const cachedNow = !!(MODEL && MODEL.health && MODEL.health.cached);
     if (info) {
       const issues = (MODEL && MODEL.health && MODEL.health.issues) || [];
-      info.textContent = '최근 ' + periodMonths + '개월 · 미완료 출원 포함'
+      info.textContent = '최근 ' + periodMonths + '개월 조회'
         + (age != null ? ' · ' + (cachedNow ? '캐시 표시 ' : '') + (age <= 0 ? '방금 갱신' : age + '분 전 갱신') : '')
         + ' · 표시 ' + shown + '건' + (issues.length ? ' · ⚠ 데이터 경고 ' + issues.length : '');
       info.title = (cachedNow ? '지금 목록은 저장된 캐시입니다(서버 재조회분이 아님).\n설정 → 캐시 비우고 다시 불러오기\n' : '') + issues.join('\n');
@@ -4057,7 +4056,6 @@
       else if (r.stale) issues.push(n + ': 이번 조회 실패(' + (r.err || '?') + ') — 직전 성공분 사용');
       else if (r.truncated) issues.push(n + ': 부분수신 ' + r.n + '/' + r.total);
       else if (r.maybeTruncated) issues.push(n + ': total 불명 · 상한 ' + r.n + '건');
-      if(r && r.supplementErrors) issues.push(...r.supplementErrors);
     });
     return issues;
   }
@@ -4088,37 +4086,11 @@
     DIAG.length = 0;
     const rows = await Promise.all(CORE_SOURCES.map((n) => callApi(n, null, ctx)));
     const R = {}; CORE_SOURCES.forEach((n, i) => { R[n] = rows[i]; });
-    // 원 출원관리 검색폼: 지시전10 + 확인필요1 + 검토중05~08을 전기간 추가 조회.
-    // 기간 내 1건 이상이어도 보강한다. 전체 과거 완료 이력 때문에 조회 상한을 소모하지 않는다.
-    if(RUNTIME.isCurrent(ctx)) {
-      const blank={rqstCls:'03',rqstStrDt:'',rqstEndDt:'',apvStat:'',ivenTyp:'',item:'',keyword:'',confirmWork1:'',confirmWork2:'',confirmWork3:'',confirmWork4:''};
-      const extras=await Promise.all([
-        callApi('file',Object.assign({},blank,{apvStat:'10'}),ctx),
-        callApi('file',Object.assign({},blank,{confirmWork1:'Y'}),ctx),
-        ...['05','06','07','08'].map(apvStat=>callApi('file',Object.assign({},blank,{apvStat}),ctx))
-      ]);
-      R.file=pdMergeFilingSources([R.file].concat(extras));
-    }
     if (R.exp && R.exp.rows && R.exp.n === 0 && !R.exp.err && RUNTIME.isCurrent(ctx)) {
       const exp2 = await callApi('exp', { rqstStrDt: '', rqstEndDt: '', apvStat: '', searchItem: '', searchKeyword: '', confirmWork1: '', confirmWork2: '', confirmWork3: '', confirmWork4: '' }, ctx);
       if (exp2 && exp2.n > 0) R.exp = exp2;
     }
     return R;
-  }
-  function pdMergeFilingSources(parts) {
-    const good=parts.filter(p=>p && Array.isArray(p.rows));
-    if(!good.length) return parts[0];
-    const merged=new Map(), errors=[];
-    const names=['기간목록','전기간 지시전','전기간 확인필요','전기간 검토05','전기간 검토06','전기간 검토07','전기간 검토08'];
-    parts.forEach((part,i)=>{
-      if(!part || !Array.isArray(part.rows)) {errors.push('출원 '+names[i]+' 조회 실패');return;}
-      if(part.truncated || part.maybeTruncated) errors.push('출원 '+names[i]+' 일부 수신 — 원화면 확인 필요');
-      part.rows.forEach((r,j)=>{
-        const key=r.intellRqstNo || r.rqstNo ? JSON.stringify([r.intellRqstNo || '',r.rqstNo || '']) : 'unknown:'+i+':'+j;
-        merged.set(key,r);
-      });
-    });
-    return Object.assign({},good[0],{rows:Array.from(merged.values()),n:merged.size,total:null,err:null,truncated:false,maybeTruncated:false,supplementErrors:errors});
   }
 
   /* v1.25.8 ── 소스별 폴백 ──────────────────────────────────────────────
