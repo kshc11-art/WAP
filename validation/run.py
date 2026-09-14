@@ -2,6 +2,9 @@
 from pathlib import Path
 import argparse, csv, decimal, hashlib, json, sys
 from datetime import datetime, timezone
+from zipfile import BadZipFile
+from xml.etree.ElementTree import ParseError
+from contextlib import ExitStack
 
 ROOT = Path(__file__).resolve().parent
 
@@ -88,8 +91,11 @@ def load_table(path, spec):
     suffix = Path(path).suffix.lower()
     keys = spec.get('keys', [])
     if suffix in ('.csv', '.tsv'):
-        with open(path, encoding=spec.get('encoding', 'utf-8-sig'), newline='') as stream:
-            rows = list(csv.reader(stream, delimiter='\t' if suffix == '.tsv' else ','))
+        try:
+            with open(path, encoding=spec.get('encoding', 'utf-8-sig'), newline='') as stream:
+                rows = list(csv.reader(stream, delimiter='\t' if suffix == '.tsv' else ',', strict=True))
+        except csv.Error as e:
+            raise ValidationError('malformed CSV/TSV: '+str(e)) from e
         if not rows:
             raise ValidationError('empty CSV/TSV')
         return {'table': table(rows[0], rows[1:], keys)}
@@ -108,15 +114,22 @@ def load_table(path, spec):
             import openpyxl
         except ImportError as e:
             raise ValidationError('XLSX comparison requires openpyxl; install requirements-dev.txt') from e
-        values = openpyxl.load_workbook(path, data_only=True, read_only=True)
-        formulas = openpyxl.load_workbook(path, data_only=False, read_only=True)
-        try:
+        with ExitStack() as resources:
+            # Own the input handles even if openpyxl fails before returning a workbook.
+            values = openpyxl.load_workbook(resources.enter_context(open(path, 'rb')), data_only=True, read_only=True)
+            resources.callback(values.close)
+            formulas = openpyxl.load_workbook(resources.enter_context(open(path, 'rb')), data_only=False, read_only=True)
+            resources.callback(formulas.close)
             result = {'sheet_order': values.sheetnames, 'sheets': {}}
             selected = spec.get('sheets')
             if selected is not None and (not selected or set(selected) != set(values.sheetnames)):
                 raise ValidationError('configured sheets must cover the complete workbook')
             for name in values.sheetnames:
                 settings = selected[name] if selected else {}
+                # Some producers leave stale worksheet dimensions after adding cells.
+                # Parse the stored cells rather than silently truncating to that hint.
+                values[name].reset_dimensions()
+                formulas[name].reset_dimensions()
                 rows = []
                 for vr, fr in zip(values[name].iter_rows(), formulas[name].iter_rows()):
                     row = []
@@ -140,8 +153,6 @@ def load_table(path, spec):
                 else:
                     result['sheets'][name] = atom(rows)
             return result
-        finally:
-            values.close(); formulas.close()
     if keys:
         raise ValidationError('row keys unsupported for this file type')
     return {'binary_sha256': digest(path)}
@@ -234,10 +245,10 @@ def main(argv=None):
             return 2  # Configuration status is never evidence of an executed comparison.
         if args.case not in ids:
             raise ValidationError('choose a registered case id')
-        result = compare_case(next(x for x in cases if x['id']==args.case))
+        result = compare_case(next(x for x in cases if x['id']==args.case), root=ROOT)
         save_report(args.case, result)
         return {'PASS':0,'FAIL':1,'WAITING':2}[result['status']]
-    except (ValidationError, OSError, ValueError, KeyError, TypeError) as e:
+    except (ValidationError, OSError, ValueError, KeyError, TypeError, BadZipFile, ParseError) as e:
         if args.command == 'compare' and re_id(args.case):
             save_report(args.case, {'id': args.case, 'status': 'ERROR', 'reason': str(e)})
         print('ERROR: '+str(e), file=sys.stderr)

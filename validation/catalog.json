@@ -248,7 +248,8 @@
       "path": "programs/annualfee-files/run.py",
       "title": "연차유지료 파일생성",
       "kind": "python",
-      "status": "imported"
+      "status": "packaging-path-corrected; runtime-unverified",
+      "source_version": "0.6.7"
     },
     {
       "id": "hwp-merge",
@@ -552,8 +553,10 @@
     },
     {
       "path": "programs/annualfee-files/kriss_annual_fee/workflow.py",
-      "sha256": "7afd77b5c6575e12b98f707670bdddaa5a28bd6a10028417fb55401f140f46fb",
-      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/kriss_annual_fee/workflow.py"
+      "sha256": "21b494e87744a47b17c4c0d197cd3048aaa0d10516e65ec164edb90272451bfb",
+      "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/kriss_annual_fee/workflow.py",
+      "import_sha256": "7afd77b5c6575e12b98f707670bdddaa5a28bd6a10028417fb55401f140f46fb",
+      "repository_change": "2026-09-14 review: shared userscript packaging path / installation guide; calculation unchanged"
     },
     {
       "path": "programs/annualfee-files/kriss_annual_fee/xlsx_ooxml.py",
@@ -582,11 +585,13 @@
     },
     {
       "path": "programs/annualfee-files/README.md",
-      "sha256": "403dd2f624e341d3f04191703ffb3ffd6878d31cd017d13aa584c1ccc1443a43",
+      "sha256": "8a5543ce24e2e3692a3bf9109604cd4fa9c0538eaea06ccc670dbe408d991aa8",
       "source": "annualfee-files/연차유지료파일생성자동화_v0.6.7/README.md",
       "business_pattern_baseline": {
         "특허 관리번호 형식": "fd80e3bb0eabbaf46a0d10a9c9742723c34d5fcbc3226b11f9a31892cd5a37b7"
-      }
+      },
+      "import_sha256": "403dd2f624e341d3f04191703ffb3ffd6878d31cd017d13aa584c1ccc1443a43",
+      "repository_change": "2026-09-14 review: shared userscript packaging path / installation guide; calculation unchanged"
     },
     {
       "path": "programs/annualfee-files/requirements.txt",
@@ -1424,5 +1429,15 @@
       "source": "committee/KRISS_Committee_Automation_v0.2.9/tools/golden_2026_1.json",
       "reason": "bundled operational records; restore locally from original committee ZIP, not a newly approved golden"
     }
-  ]
+  ],
+  "review": {
+    "date": "2026-09-14",
+    "baseline_commit": "741f252f884d50c7d9f80d0d07a07ec4090fa440",
+    "scope": "33 programs; static review and selected synthetic cases",
+    "report": "validation/README.md#코드-분석",
+    "business_validation": "awaiting raw/golden; not certified",
+    "infrastructure_tests_passed": 28,
+    "initial_diagnostic_cases": 28,
+    "initial_diagnostic_mismatches": 8
+  }
 }
