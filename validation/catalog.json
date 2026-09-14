@@ -325,13 +325,13 @@
     },
     {
       "path": "scripts/portal-dashboard.user.js",
-      "sha256": "5d58758fd1729aa021e311155f89e80c54660594f9a58d4bbcf898bac67dd8a2",
+      "sha256": "8ce514a078fa5333f035092f759c52aac28b650d0f025f400b9bff612d7b08b2",
       "source": "tampermonkey/[KRISS Portal] 업무 대시보드.user.js",
       "business_pattern_baseline": {
         "특허 관리번호 형식": "262d5330161da2bfd5407e0695d881acc16ae818d47bf56395abbef3867ea8c0"
       },
       "import_sha256": "5ed817e3c117a34e4f01571b3eb84fe6310d059406edefc540e5ef1c9ef3ef40",
-      "repository_change": "2026-09-14: current PPS / verified exemption filing instructions; office submission confirmation; result review; pending-source enrichment. Internal portal verification pending."
+      "repository_change": "2026-09-14: current PPS / verified exemption filing instructions; office submission confirmation; result review; pending-source enrichment. Internal portal verification pending. Same version 1.26.3: task receipt02 and uninvoiced expense receipt02 appear as actionable follow-up."
     },
     {
       "path": "scripts/expense-helper.user.js",

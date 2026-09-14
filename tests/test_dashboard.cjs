@@ -39,6 +39,7 @@ function section(start, end) {
 
 const actualRules = [
   section('  const F = {', '  const K = {'),
+  section('  const APV_STAT = {', '  const STAGE_ORDER = '),
   section('  const firstVal = ', '  function fmtYmd('),
   declaration('status2'),
   declaration('pdKrJudge'),
@@ -624,4 +625,108 @@ test('office confirmation without any request identity cannot open a blank detai
   assert.equal(await harness.open(newReviewAction({routeKind: 'fileConfirmation', intellRqstNo: '', stageRqstNo: '', rqstNo: ''})), false);
   assert.equal(harness.calls.popup.length + harness.calls.submit.length + harness.calls.official.length, 0);
   assert.ok(harness.calls.toast.length > 0);
+});
+
+function taskRequest(state, changes = {}) {
+  return {rqstNo: 'TEST_TASK_' + state, bpmRqstNo: 'TEST_TASK_BPM_' + state, intellRqstNo: 'TEST_APPLICATION_A', intellMngNo: 'TEST_PATENT_A', apvStat: state, rqstDt: '20260901', rqstSbjt: 'Synthetic task request', ...changes};
+}
+
+function expenseRequest(changes = {}) {
+  return {rqstNo: 'TEST_EXPENSE_REQUEST', intellRqstNo: 'TEST_APPLICATION_A', intellMngNo: 'TEST_PATENT_A', apvStat: '02', rqstDt: '20260901', ivenNm: 'Synthetic expense request', taxbilIsuCls: 'N', ...changes};
+}
+
+test('received task request is actionable without a my-work BPM', async () => {
+  const acts = await build({task: [taskRequest('02')]});
+  assert.equal(acts.length, 1);
+  assert.equal(acts[0].stage, 'task');
+  assert.equal(acts[0].track, 'action');
+  assert.equal(acts[0].baseTrack, 'action');
+  assert.equal(acts[0].action, '업무요청 접수 · 후속 처리');
+});
+
+test('received task stays actionable after its BPM is matched and later removed', async () => {
+  const work = bpm({processcode: 'B_RES00012', instancename: 'TEST_TASK_BPM_02'});
+  const acts = await build({task: [taskRequest('02')]}, [work]);
+  const row = acts.find(act => act.stage === 'task' && !act.orphanBpm);
+  assert.equal(row.myWork.processcode, 'B_RES00012');
+  assert.equal(row.track, 'action');
+  assert.equal(row.baseTrack, 'action');
+  const context = vm.createContext({WORK: {my: [], myOk: true}, STAGE_NM: {}, acts});
+  vm.runInContext(section('  function normBiz(', '  function patentBpmMeta('), context);
+  vm.runInContext('applyWorkflowContinuity(acts, {clearExisting: true})', context);
+  assert.equal(row.myWork, undefined);
+  assert.equal(row.track, 'action');
+  assert.equal(row.baseTrack, 'action');
+  assert.equal(row.action, '업무요청 접수 · 후속 처리');
+});
+
+for (const state of ['00', '05']) {
+  test('task state ' + state + ' remains excluded', async () => {
+    const acts = await build({task: [taskRequest(state)]});
+    assert.equal(acts.length, 0);
+  });
+}
+
+for (const state of ['03', '04']) {
+  test('task state ' + state + ' remains progress without matching my-work', async () => {
+    const acts = await build({task: [taskRequest(state)]});
+    assert.equal(acts.length, 1);
+    assert.equal(acts[0].track, 'progress');
+    assert.equal(acts[0].baseTrack, 'progress');
+  });
+}
+
+test('received expense with no issued invoice is actionable', async () => {
+  const acts = await build({exp: [expenseRequest()]});
+  assert.equal(acts.length, 1);
+  assert.equal(acts[0].stage, 'exp');
+  assert.equal(acts[0].track, 'action');
+  assert.equal(acts[0].baseTrack, 'action');
+  assert.equal(acts[0].action, '청구서 접수 (검토 대기)');
+});
+
+for (const issuance of [{taxbilIsuCls: 'Y'}, {taxbilIsuCls: 'N', taxbilIsuDt: '20260910'}]) {
+  test('received expense with invoice issuance evidence remains progress: ' + Object.keys(issuance).join(','), async () => {
+    const acts = await build({exp: [expenseRequest(issuance)]});
+    assert.equal(acts.length, 1);
+    assert.equal(acts[0].track, 'progress');
+    assert.equal(acts[0].baseTrack, 'progress');
+    assert.equal(acts[0].taxDone, true);
+  });
+}
+
+test('default receipt list and stage counters follow the same classification before and after track switching', async () => {
+  const acts = await build({
+    task: [taskRequest('02'), taskRequest('03')],
+    exp: [expenseRequest(), expenseRequest({rqstNo: 'TEST_ISSUED_EXPENSE', taxbilIsuCls: 'Y'})],
+  });
+  const nodes = Object.fromEntries(['pd-tabs', 'pd-tc-a', 'pd-tc-p', 'pd-bign'].map(id => [id, {textContent: '', innerHTML: '', querySelectorAll: () => []}]));
+  class FixtureDate extends Date {
+    constructor(...args) {super(...(args.length ? args : [2026, 8, 14]));}
+    static now() {return new Date(2026, 8, 14).getTime();}
+  }
+  const context = vm.createContext({
+    Date: FixtureDate,
+    document: {getElementById: id => nodes[id] || null},
+    MODEL: {acts}, PORTAL: [], MASTER: null,
+    hiddenActions: [], query: '', trackFilter: 'action', stageFilter: 'all', actionFilter: 'all', urgFilter: 'all',
+    periodMonths: 3, K: {portal: 'test.portal'}, gmGet: (_key, fallback) => fallback,
+  });
+  const declarations = ['fmtYmd8', 'shiftMonthsClamped', 'pdCalendarDate', 'pdInWorkPeriod', 'pdScopedActions', 'pdPortalInPeriod', 'stageKeys', 'renderApplied', 'renderTabs', 'currentList'].map(name => declaration(name));
+  vm.runInContext(section('  const STAGE_NM = ', '  const ETC_SORT = ') + '\n' + declarations.join('\n'), context);
+  vm.runInContext('renderTabs()', context);
+  const list = vm.runInContext('currentList()', context);
+  assert.deepEqual(Array.from(list, item => item.title).sort(), ['업무요청 접수 · 후속 처리', '청구서 접수 (검토 대기)'].sort());
+  assert.equal(nodes['pd-tc-a'].textContent, list.length);
+  assert.equal(nodes['pd-tc-p'].textContent, 2);
+  assert.equal(nodes['pd-bign'].textContent, list.length);
+  assert.match(nodes['pd-tabs'].innerHTML, /data-stage="task">업무요청<i>1<\/i>/);
+  assert.match(nodes['pd-tabs'].innerHTML, /data-stage="exp">청구서<i>1<\/i>/);
+  vm.runInContext("trackFilter='progress'; renderTabs()", context);
+  const progress = vm.runInContext('currentList()', context);
+  assert.equal(progress.length, 2);
+  assert.ok(Array.from(progress).every(item => item.act.track === 'progress'));
+  assert.equal(nodes['pd-tc-p'].textContent, progress.length);
+  assert.equal(nodes['pd-bign'].textContent, progress.length);
+  assert.equal(nodes['pd-tc-a'].textContent, 2);
 });
