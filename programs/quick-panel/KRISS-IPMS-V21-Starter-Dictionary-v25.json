@@ -1,0 +1,230 @@
+{
+  "schema": "v21-shortcut-dictionary@2",
+  "contexts": [
+    {
+      "id": "global",
+      "name": "Global",
+      "type": "global",
+      "parent": null,
+      "match": {},
+      "note": ""
+    },
+    {
+      "id": "kriss_ipms_popup",
+      "name": "KRISS IPMS · 상세 팝업",
+      "type": "manual",
+      "parent": "global",
+      "match": {
+        "label": "KRISS IPMS popup adapter"
+      },
+      "note": "Tampermonkey Site Adapter가 활성화된 상세 팝업 Context. 현재 임시 매핑은 필요에 따라 Studio에서 변경."
+    }
+  ],
+  "actions": [
+    {
+      "id": "action_kriss_receive",
+      "name": "접수",
+      "category": "KRISS IPMS",
+      "note": ""
+    },
+    {
+      "id": "action_kriss_approve",
+      "name": "승인",
+      "category": "KRISS IPMS",
+      "note": ""
+    },
+    {
+      "id": "action_kriss_final_approve",
+      "name": "최종승인",
+      "category": "KRISS IPMS",
+      "note": "화면 버튼 최종승인/최종확인 모두 대응"
+    },
+    {
+      "id": "action_kriss_reject",
+      "name": "반려",
+      "category": "KRISS IPMS",
+      "note": ""
+    },
+    {
+      "id": "action_kriss_temp_save",
+      "name": "임시저장",
+      "category": "KRISS IPMS",
+      "note": ""
+    },
+    {
+      "id": "action_kriss_save",
+      "name": "저장",
+      "category": "KRISS IPMS",
+      "note": ""
+    },
+    {
+      "id": "action_kriss_detail",
+      "name": "상세보기",
+      "category": "KRISS IPMS",
+      "note": ""
+    },
+    {
+      "id": "action_kriss_waiting",
+      "name": "접수대기상태로변경",
+      "category": "KRISS IPMS",
+      "note": ""
+    },
+    {
+      "id": "action_kriss_close",
+      "name": "닫기",
+      "category": "KRISS IPMS",
+      "note": "화면 버튼 닫기/취소 모두 대응"
+    }
+  ],
+  "sources": [
+    {
+      "id": "source_manual",
+      "type": "Manual",
+      "name": "Manual",
+      "note": "Built-in fallback source"
+    },
+    {
+      "id": "source_kriss_ipms_popup",
+      "type": "Tampermonkey",
+      "name": "KRISS IPMS · 상세 팝업 Adapter",
+      "note": "키 매핑은 Studio가 관리하고 userscript는 버튼 탐지/실행만 담당"
+    }
+  ],
+  "bindings": [
+    {
+      "id": "bind_kriss_01",
+      "context": "kriss_ipms_popup",
+      "action": "action_kriss_receive",
+      "source": "source_kriss_ipms_popup",
+      "trigger": {
+        "type": "keyboard",
+        "value": "Alt+1"
+      },
+      "behavior": {
+        "type": "none",
+        "value": ""
+      },
+      "note": "현재 임시 매핑. Studio에서 자유롭게 변경 가능."
+    },
+    {
+      "id": "bind_kriss_02",
+      "context": "kriss_ipms_popup",
+      "action": "action_kriss_approve",
+      "source": "source_kriss_ipms_popup",
+      "trigger": {
+        "type": "keyboard",
+        "value": "Alt+2"
+      },
+      "behavior": {
+        "type": "none",
+        "value": ""
+      },
+      "note": "현재 임시 매핑. Studio에서 자유롭게 변경 가능."
+    },
+    {
+      "id": "bind_kriss_03",
+      "context": "kriss_ipms_popup",
+      "action": "action_kriss_final_approve",
+      "source": "source_kriss_ipms_popup",
+      "trigger": {
+        "type": "keyboard",
+        "value": "Alt+3"
+      },
+      "behavior": {
+        "type": "none",
+        "value": ""
+      },
+      "note": "현재 임시 매핑. Studio에서 자유롭게 변경 가능."
+    },
+    {
+      "id": "bind_kriss_04",
+      "context": "kriss_ipms_popup",
+      "action": "action_kriss_reject",
+      "source": "source_kriss_ipms_popup",
+      "trigger": {
+        "type": "keyboard",
+        "value": "Alt+4"
+      },
+      "behavior": {
+        "type": "none",
+        "value": ""
+      },
+      "note": "현재 임시 매핑. Studio에서 자유롭게 변경 가능."
+    },
+    {
+      "id": "bind_kriss_05",
+      "context": "kriss_ipms_popup",
+      "action": "action_kriss_temp_save",
+      "source": "source_kriss_ipms_popup",
+      "trigger": {
+        "type": "keyboard",
+        "value": "Alt+5"
+      },
+      "behavior": {
+        "type": "none",
+        "value": ""
+      },
+      "note": "현재 임시 매핑. Studio에서 자유롭게 변경 가능."
+    },
+    {
+      "id": "bind_kriss_06",
+      "context": "kriss_ipms_popup",
+      "action": "action_kriss_save",
+      "source": "source_kriss_ipms_popup",
+      "trigger": {
+        "type": "keyboard",
+        "value": "Alt+6"
+      },
+      "behavior": {
+        "type": "none",
+        "value": ""
+      },
+      "note": "현재 임시 매핑. Studio에서 자유롭게 변경 가능."
+    },
+    {
+      "id": "bind_kriss_07",
+      "context": "kriss_ipms_popup",
+      "action": "action_kriss_detail",
+      "source": "source_kriss_ipms_popup",
+      "trigger": {
+        "type": "keyboard",
+        "value": "Alt+8"
+      },
+      "behavior": {
+        "type": "none",
+        "value": ""
+      },
+      "note": "현재 임시 매핑. Studio에서 자유롭게 변경 가능."
+    },
+    {
+      "id": "bind_kriss_08",
+      "context": "kriss_ipms_popup",
+      "action": "action_kriss_waiting",
+      "source": "source_kriss_ipms_popup",
+      "trigger": {
+        "type": "keyboard",
+        "value": "Alt+9"
+      },
+      "behavior": {
+        "type": "none",
+        "value": ""
+      },
+      "note": "현재 임시 매핑. Studio에서 자유롭게 변경 가능."
+    },
+    {
+      "id": "bind_kriss_09",
+      "context": "kriss_ipms_popup",
+      "action": "action_kriss_close",
+      "source": "source_kriss_ipms_popup",
+      "trigger": {
+        "type": "keyboard",
+        "value": "Alt+0"
+      },
+      "behavior": {
+        "type": "none",
+        "value": ""
+      },
+      "note": "현재 임시 매핑. Studio에서 자유롭게 변경 가능."
+    }
+  ]
+}

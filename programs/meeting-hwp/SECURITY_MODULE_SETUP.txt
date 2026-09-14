@@ -1,0 +1,24 @@
+한컴 Automation 보안 승인 모듈 설정
+====================================
+
+공식 안내 페이지:
+https://developer.hancom.com/hwpautomation
+
+프로그램 상단 [보안모듈 설정]에서:
+- 예: 다운로드한 DLL 선택/등록
+- 아니오: 공식 한컴 개발 가이드 페이지 열기
+
+필요 파일:
+FilePathCheckerModuleExample.dll
+(한컴 공식 '보안모듈(Automation).zip'에 포함)
+
+등록 위치:
+HKEY_CURRENT_USER\Software\HNC\HwpAutomation\Modules
+
+프로그램은 선택한 DLL을
+%LOCALAPPDATA%\HwpMeetingMerger\security
+로 복사하고 사용자 레지스트리에 등록합니다.
+
+주의:
+기관 보안정책이 사용자 레지스트리 변경 또는 DLL 로드를 제한한다면
+전산 담당자에게 공식 한컴 보안모듈 등록을 요청해야 합니다.

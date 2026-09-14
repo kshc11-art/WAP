@@ -1,0 +1,11 @@
+{
+  "bridge_url": "http://127.0.0.1:8765",
+  "portal": {
+    "origin": "https://krisstar.kriss.re.kr",
+    "proposal_path": "/mis/acc/popup/S_ACC_01020100.do?popupAt=popup",
+    "document_type_text": "특허 출원/등록/연차료",
+    "expense_code": "55630",
+    "final_save_mode": "manual",
+    "etax_auto_confirm": false
+  }
+}
