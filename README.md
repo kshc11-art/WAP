@@ -65,7 +65,7 @@
 
 ### 7. 마크프로 연차료 조사
 
-[코드](programs/markpro-annualfee/annuity_engine_v1_3.js)는 청구 관리번호가 있는 행을 IP 마스터와 연결해 연차·지분·계약종료·패밀리를 계산합니다. 납부주체는 수동 예외 → 기업 100% → 5년차 이하 → 출자 → 유효 기술이전 → 패밀리 옵션 → 연구부서 순서로 판단합니다([판정](https://github.com/kshc11-art/WAP/blob/b1eb75c78020f28196408c834c695b1d7cad3a20/programs/markpro-annualfee/annuity_engine_v1_3.js#L227)). 1차/2차·검토/조회 Excel 및 분기 이력은 별도 출력입니다. 같은 관리번호의 마스터 첫 행을 사용하고 열 이름이 달라도 경고 후 위치로 읽는 현재 동작은 충돌/양식 검증 대상입니다. [기존 명세 v1.2](programs/markpro-annualfee/patent_annuity_tool_spec_v1_2.md)의 의도된 1차 말행 중복을 임의 제거하지 않습니다.
+[코드](programs/markpro-annualfee/annuity_engine_v1_3.js)는 청구 관리번호가 있는 행을 IP 마스터와 연결해 연차·지분·계약종료·패밀리를 계산합니다. 납부주체는 수동 예외 → 기업 100% → 5년차 이하 → 출자 → 유효 기술이전 → 패밀리 옵션 → 연구부서 순서로 판단합니다([판정](https://github.com/kshc11-art/WAP/blob/b1eb75c78020f28196408c834c695b1d7cad3a20/programs/markpro-annualfee/annuity_engine_v1_3.js#L227)). 1차/2차·검토/조회 Excel을 출력합니다. [오프라인 HTML v1.4](programs/markpro-annualfee/patent_annuity_tool_v1_4_offline.html)는 독립적으로 내장한 엔진을 사용하고, [Python 분기 이력](programs/markpro-annualfee/special_patents_history.py)은 관리번호+분기 키로 특별관리 태그를 저장하므로 이 세 실행 경로를 하나의 검증 결과로 취급하지 않습니다. 같은 관리번호의 마스터 첫 행을 사용하고 열 이름이 달라도 경고 후 위치로 읽는 현재 동작은 충돌/양식 검증 대상입니다. [기존 명세 v1.2](programs/markpro-annualfee/patent_annuity_tool_spec_v1_2.md)의 의도된 1차 말행 중복을 임의 제거하지 않습니다.
 
 ### 8. 연차유지료 파일 생성
 
