@@ -158,11 +158,13 @@
       "id": "stats-ledger",
       "path": "scripts/stats-ledger.user.js",
       "kind": "userscript",
-      "title": "KRISS 보조원장(기술이전) 지재권 집행내역 정제 추출",
-      "version": "1.1",
+      "title": "KRISS 보조원장(기술이전) 지재권 집행내역 정제·통계 추출",
+      "version": "3.3.1",
       "enabled_at_backup": false,
       "namespace": "kriss.pms.techtrns.ipledger",
-      "status": "needs-validation"
+      "status": "synthetic-tested-runtime-raw-golden-pending",
+      "source_version": "3.3",
+      "source_bundle": "kriss_ip_ledger_v3_3_bundle.zip"
     },
     {
       "id": "console-launcher",
@@ -406,8 +408,11 @@
     },
     {
       "path": "scripts/stats-ledger.user.js",
-      "sha256": "bb098acf9d5993677ef7ed464443b13f8dd4c5d6a2e6d2ec3a02ab710e267b91",
+      "sha256": "38004b6f40dd505ca5315696e5c9299459643901d466c1d8e071ea9056ce5d5d",
+      "original_sha256": "bb098acf9d5993677ef7ed464443b13f8dd4c5d6a2e6d2ec3a02ab710e267b91",
       "source": "tampermonkey/KRISS 보조원장(기술이전) 지재권 집행내역 정제 추출.user.js",
+      "incoming_source": "kriss_ip_ledger_v3_3_bundle.zip/kriss_ip_ledger_exporter_v3_3.user.js",
+      "incoming_sha256": "ab75f46c41b89eb5d8f63de43b3f1cfcb562d8b9c60d6a442befb3d8e84710ef",
       "business_pattern_baseline": {
         "특허 관리번호 형식": "e452b9821d4dad5751a5c1a1b74688ad32af65c679b23ba270d8ea4dd008cf9f"
       }
