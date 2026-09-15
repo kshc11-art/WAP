@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         KRISS 보조원장(기술이전) 지재권 집행내역 정제·통계 추출
 // @namespace    kriss.pms.techtrns.ipledger
-// @version      3.3.1
+// @version      3.3.2
 // @description  보조원장(기술이전)을 읽어 사건 문맥으로 정제하고, 국내/해외 2값(PCT=해외)·PCT 여부·권리유형·재원구분 통계를 백데이터와 함께 xlsx로 내보냅니다. 외부 라이브러리 없이 동작(내부망 대응).
 // @match        https://krisstar.kriss.re.kr/pms/res/techtrns/S_ACC_01080250.do*
 // @grant        unsafeWindow
@@ -9,6 +9,9 @@
 // ==/UserScript==
 
 /* ---------------------------------------------------------------------------
+ * v3.3.2 변경점 — 2026-09-15
+ *   - 적요에 출원·등록번호로 명시된 30/40 계열은 특허로 단정하지 않고
+ *     기타/미확인과 검토 사유로 보존한다.
  * v3.3 변경점 (minor) — 2026-08-27
  *   - '국내/해외 구분'을 국내·해외 2값으로 정규화: PCT는 해외, 저작권(소프트웨어)은 국내.
  *     기존 수기값 PCT/소프트웨어도 각각 해외/국내로 자동 호환한다.
@@ -651,12 +654,21 @@
       (/PCT/i.test(d) && /국제\s*출원/.test(d));
   }
 
+  // 30/40 계열 번호는 명시적 출원·등록번호 라벨에 붙은 경우에만 특허 추론을 막는다.
+  // 본문에 우연히 나타난 숫자나 다른 번호의 부분 문자열은 권리유형 근거로 쓰지 않는다.
+  function hasNonPatentNumberEvidence(desc) {
+    return /(?:출원번호|등록번호)\s*:\s*(?:30|40)-(?:\d{4}-)?\d{6,7}(?!\d)/.test(String(desc || ''));
+  }
+
+  const NON_PATENT_NUMBER_REVIEW = '출원·등록번호 30/40 계열 — 특허 여부 및 권리유형 확인 필요';
+
   function classifyRightType(desc, mgmtNo) {
     const d = String(desc || ''), m = String(mgmtNo || '');
     if (/(저작권|저작물\s*저작권|소프트웨어\s*저작권|컴퓨터\s*프로그램\s*저작물)/.test(d) ||
         /^C\d{6}[A-Z]{2,4}$/i.test(m) || /\bC-\d{4}-\d{6}\b/.test(d)) {
       return '저작권(소프트웨어)';
     }
+    if (hasNonPatentNumberEvidence(d)) return '기타/미확인';
     if (/^P\d{6}[A-Z]{2,4}$/i.test(m) || /\bRESI\d{10,}\b/i.test(d) ||
         /(?:출원번호|등록번호)\s*:/.test(d) || /(?:국내|해외)?\s*특허/.test(d) ||
         /특허\s*(?:출원|등록|연차)/.test(d) || /PCT\//i.test(d)) {
@@ -767,6 +779,9 @@
       if (/말소/.test(d)) rv.push('청구항 말소 건 — 분류 확인');
       if (rv.length) r.review = rv.join(' / ');
     }
+    if (hasNonPatentNumberEvidence(d) && r.rightType === '기타/미확인') {
+      r.review = (r.review ? r.review + ' / ' : '') + NON_PATENT_NUMBER_REVIEW;
+    }
     return r;
   }
 
@@ -848,6 +863,10 @@
     if (!p.region) miss.push('국내/해외');
     const rv = [];
     if (/\[[^\[\]]*\]/.test(d) && p.review) rv.push(p.review);
+    if (hasNonPatentNumberEvidence(d) && p.rightType === '기타/미확인' &&
+        !rv.some(function (v) { return v.indexOf(NON_PATENT_NUMBER_REVIEW) >= 0; })) {
+      rv.push(NON_PATENT_NUMBER_REVIEW);
+    }
     if (miss.length) rv.push((miss.length === 3 && !p.mgmtNo ? '비정형 적요 — ' : '') + miss.join('·') + ' 수기 입력 필요');
     if (/환급|반환|여입/.test(d)) rv.push('환급·반환 성격 — 금액 방향 확인');
     if (/지분/.test(d)) rv.push('지분 변경·정정 건 — 분류 확인');
@@ -997,6 +1016,9 @@
           if (regionLocked && requestedRegion && requestedRegion !== '국내')
             p.review = '수기 국내/해외가 저작권(소프트웨어)=국내 정책과 충돌 — 권리유형 확인';
           p.region = '국내';
+        }
+        if (hasNonPatentNumberEvidence(o.reslDesc) && p.rightType === '기타/미확인') {
+          p.review = (p.review ? p.review + ' / ' : '') + NON_PATENT_NUMBER_REVIEW;
         }
         if (Object.prototype.hasOwnProperty.call(ov, 'fund')) f = { fund: str(ov.fund), review: '' };
         p.stage = STAGE_MAP[p.expType] || '';
