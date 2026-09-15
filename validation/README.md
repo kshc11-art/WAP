@@ -1,6 +1,8 @@
 # 검증 자료와 사용법
 
-현재 raw/golden은 미제공이다. ZIP에 있던 과거 산출물과 검증 결과를 이번 golden으로 채택하지 않았다.
+현재 저장소의 raw/golden 비교 케이스에는 승인된 실제 기대값이 등록되지 않았다. 2026-09-15 제공된 최신 원자료·수작업 통계는 로컬 검토에 사용했지만, 수작업 결과나 ZIP의 과거 산출물을 golden으로 자동 채택하지 않았다.
+
+각 프로그램이 지금 어떤 자료를 읽고 어떤 순서로 계산하는지는 [통계자료 로직 지도](../README.md#통계자료-로직-지도)에서 먼저 확인한다.
 
 ```text
 validation/
@@ -13,7 +15,7 @@ validation/
 ```
 
 1. `python validation/run.py status` 또는 루트 `verify.cmd`: 준비 상태 확인.
-2. 나중에 raw/golden을 받으면 프로그램과 기준기간에 맞춰 폴더에 넣고 cases.json을 채운다. 각 raw 파일의 SHA-256과 golden 파일의 SHA-256을 등록한다.
+2. 프로그램별 모집단·기준일·행별 기대값을 근거로 확정한 뒤 로컬 raw/golden 폴더와 cases.json을 채운다. 각 raw 파일의 SHA-256과 승인된 golden 파일의 SHA-256을 등록한다. 수작업 합계가 가깝다는 이유만으로 golden을 만들지 않는다.
 3. 대상 프로그램을 별도로 실행해 actual/<id>에 결과를 저장한다. 현재 도구는 프로그램 실행이나 Office 조작을 자동화하지 않는다.
 4. `python validation/run.py compare patent-holdings`: 등록된 출력 전체를 비교한다.
 
