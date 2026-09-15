@@ -100,6 +100,39 @@ function region(r) {
   return r.aoa[1][r.headers.indexOf('국내/해외 구분')];
 }
 
+function rightType(r) {
+  return r.aoa[1][r.headers.indexOf('권리유형')];
+}
+
+test('명시된 30·40 출원·등록번호는 특허 추론을 막고 검토 사유를 남긴다', () => {
+  const design = one('출원번호: 30-2026-1111111 [국내출원료-국내관납료]');
+  assert.equal(rightType(design), '기타/미확인');
+  assert.equal(design.stat.review, 1);
+  assert.match(design.review[1][4], /30\/40 계열.*권리유형 확인/);
+
+  const trademark = one('등록번호: 40-1111111 특허 등록 [국내등록료-국내관납료]');
+  assert.equal(rightType(trademark), '기타/미확인');
+  assert.match(trademark.review[1][4], /30\/40 계열.*권리유형 확인/);
+
+  const manuallyLocated = one('출원번호: 30-2026-1111111 [출원료-관납료]', { region: '국내' });
+  assert.equal(rightType(manuallyLocated), '기타/미확인');
+  assert.match(manuallyLocated.review[1][4], /30\/40 계열.*권리유형 확인/);
+});
+
+test('10 특허·PCT·소프트웨어 근거와 라벨 밖의 숫자를 그대로 처리한다', () => {
+  assert.equal(rightType(one('출원번호: 10-2026-1111111 [국내출원료-국내관납료]')), '특허');
+  assert.equal(rightType(one('PCT/KR2026/999999 [해외출원료-해외관납료]')), '특허');
+  assert.equal(rightType(one('소프트웨어 저작권 등록 [국내등록료-국내관납료]')), '저작권(소프트웨어)');
+  assert.equal(rightType(one('특허 출원 30-2026-1111111 [국내출원료-국내관납료]')), '특허');
+  assert.equal(rightType(one('출원번호: 130-2026-1111111 특허 [국내출원료-국내관납료]')), '특허');
+  assert.equal(rightType(one('출원번호: 30-2026-11111110 특허 [국내출원료-국내관납료]')), '특허');
+
+  const conflicting = one('출원번호: 40-2026-1111111 PCT/KR2026/999999 [해외출원료-해외관납료]');
+  assert.equal(rightType(conflicting), '기타/미확인');
+  assert.equal(region(conflicting), '해외');
+  assert.match(conflicting.review[1][4], /30\/40 계열.*권리유형 확인/);
+});
+
 test('대괄호 적요의 누락 분류와 기타 원문을 검토에 남긴다', () => {
   const missing = one('[등록료-관납료]');
   assert.equal(region(missing), '');
