@@ -211,10 +211,11 @@
       "path": "scripts/ipms-input-helper.user.js",
       "kind": "userscript",
       "title": "KRISS 입력 Helper",
-      "version": "1.11.1",
+      "version": "1.11.2",
       "enabled_at_backup": true,
       "namespace": "https://krisstar.kriss.re.kr/",
-      "status": "imported"
+      "status": "reviewer-row-fill-fixed-synthetic-tested-runtime-pending",
+      "source_version": "1.11.1"
     },
     {
       "id": "core-recon",
@@ -439,7 +440,7 @@
     },
     {
       "path": "scripts/ipms-input-helper.user.js",
-      "sha256": "e82307892a0bd81735c5d43ef17f73315543e20c9e57a273b4104e3087ac7891",
+      "sha256": "05a5adf1c09c62ec1672b0e88ea88d50296db379f427b12124b3c803388695b6",
       "source": "tampermonkey/KRISS 입력 Helper.user.js",
       "business_pattern_baseline": {
         "연구기관 이메일 주소": "1ee1d62f50e771715a02e80f4c9956f1ef88114afc419cc2c473cec6a6008ffb",

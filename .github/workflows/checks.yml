@@ -18,8 +18,8 @@ jobs:
         run: python tools/check.py
       - name: Comparison engine regression
         run: python -m unittest discover -s tests -v
-      - name: Browser workflow and IP ledger regressions
-        run: node --test tests/test_dashboard.cjs tests/test_stats_ledger.cjs
+      - name: Browser workflow, IP ledger and input helper regressions
+        run: node --test tests/test_dashboard.cjs tests/test_stats_ledger.cjs tests/test_input_helper.cjs
       - name: Private repository
         env:
           GH_TOKEN: ${{ github.token }}

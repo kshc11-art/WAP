@@ -1,13 +1,19 @@
 // ==UserScript==
 // @name         KRISS 입력 Helper
 // @namespace    https://krisstar.kriss.re.kr/
-// @version      1.11.1
-// @description  KRISS 입력 Helper 1.11.1: 주소록 수신자 확정·리마인더 문구 편집·전달 오류 확인. 선행조사 상세·기관별 소유지분·기존 요청 단건 확인. 문구 대상·업무 분류, Enter 삽입, 등록·수정·삭제·되돌리기. Alt+7.
+// @version      1.11.2
+// @description  KRISS 입력 Helper 1.11.2: 주소록 수신자 확정·리마인더 문구 편집·전달 오류 확인. 선행조사 상세·기관별 소유지분·기존 요청 단건 확인. 문구 대상·업무 분류, Enter 삽입, 등록·수정·삭제·되돌리기. Alt+7.
 // @match        *://krisstar.kriss.re.kr/*
 // @match        *://*.kriss.re.kr/*
 // @run-at       document-start
 // @grant        none
 // ==/UserScript==
+
+/* v1.11.2 (2026-09-21): 등록완료 보고·출원결과검토 검토자 자동추가 수정.
+ * 새 검토행을 item.set()으로 채우면 화면의 dataChange(userNm 동기 조회 → refreshRow(선택행)/사용자 팝업) 핸들러가
+ * 실행되어 선택행이 없을 때 "Cannot read properties of null (reading 'uid')"로 실패했고, editable:false인
+ * 부서·직급·구내번호는 set()이 무시했다. 화면 자체 userCallback 계약(직접 대입 + dirty + refreshRow)으로 채우고,
+ * 새 행 선택·dataSource 값·화면 표시를 확인한 경우에만 완료로 안내한다. 자동추가 뒤 검토자 목록 재조회로 행이 비면 1회 재추가. */
 
 /* v1.11.0 (2026-09-08): 선행조사 사전조회 대기·재시도, 비용분담과 소유지분 분리, 특정 외부기관 과반 예외. */
 
@@ -146,7 +152,7 @@
   'use strict';
 
   var TAG = '[KRISS-HELPER]';
-  var VERSION = '1.11.1';
+  var VERSION = '1.11.2';
   var MAIL_COOKIE_KEY = 'krissMailData';
   var STAMP_COOKIE_KEY = 'krissStampData';
   var COOKIE_TTL = 120;
@@ -926,10 +932,18 @@
     var ds = kg.dataSource;
 
     var run = function (reason) {
-      if (window.__krissRegCmplAutoDone) return;
       if (!isRegCmplAccepted()) { console.log(TAG, '상태 재확인 실패 — 자동추가 중단'); return; }  // 실행 직전 재확인
+      if (ds.data().length > 0) { window.__krissRegCmplAutoDone = true; console.log(TAG, '검토자 행 존재 — 자동추가 생략'); return; }
+      if (window.__krissRegCmplAutoDone) {
+        // [v1.11.2] 타임아웃 경로로 먼저 추가한 뒤 검토자 목록 read가 늦게 끝나면 dataSource가 서버 목록으로 교체되어
+        // 추가한 행이 사라진다. 추가가 실제로 끝난 뒤(LastAdd) 목록이 비어 있을 때만 1회 재추가한다.
+        if (!window.__krissRegCmplLastAdd || window.__krissRegCmplAutoReadd) return;
+        window.__krissRegCmplAutoReadd = true;
+        console.log(TAG, '검토자 목록 재조회 후 0건 — 자동추가 재실행 [' + reason + ']');
+        fillRegCmplReviewer();
+        return;
+      }
       window.__krissRegCmplAutoDone = true;
-      if (ds.data().length > 0) { console.log(TAG, '검토자 행 존재 — 자동추가 생략'); return; }
       console.log(TAG, '검토자 자동추가(주발명자) [' + reason + ']');
       fillRegCmplReviewer();
     };
@@ -1005,64 +1019,165 @@
     });
   }
 
+  // ------------------------------------------------------------
+  // [v1.11.2] 검토자 그리드 공통 — 화면 자체 계약을 그대로 따른다.
+  //   화면의 userCallback: 선택행 데이터에 직접 대입 → dirty=true → grid.refreshRow().
+  //   item.set()은 쓰지 않는다. Kendo Model.set은 editable:false 필드(부서·직급·구내번호)를 무시하고,
+  //   userNm 변경 이벤트가 화면의 dataChange(동기 selectEmpInfo 조회 → refreshRow(선택행) / 사용자 조회 팝업)를
+  //   호출해 선택행이 없으면 "Cannot read properties of null (reading 'uid')"로 실패했다.
+  // ------------------------------------------------------------
+  function gridItemUid(item) {
+    return (item && item.uid) ? String(item.uid) : '';
+  }
+
+  // pageGrid.addRow() 전후의 행 목록을 비교해 새로 생긴 행을 돌려준다(uid 기준, 없으면 객체 동일성). 없으면 null.
+  function gridAddBlankRow(kg, pageGrid) {
+    var beforeUids = {}, beforeItems = [];
+    var d0 = kg.dataSource.data();
+    for (var i = 0; i < d0.length; i++) {
+      if (!d0[i]) continue;
+      beforeItems.push(d0[i]);
+      var u0 = gridItemUid(d0[i]);
+      if (u0) beforeUids[u0] = true;
+    }
+    pageGrid.addRow();
+    var d1 = kg.dataSource.data();
+    for (var j = 0; j < d1.length; j++) {
+      var it = d1[j];
+      if (!it) continue;
+      var u1 = gridItemUid(it);
+      if (u1 ? !beforeUids[u1] : beforeItems.indexOf(it) === -1) return it;
+    }
+    return null;
+  }
+
+  // 화면 userCallback과 같은 직접 대입. dirtyFields는 Kendo Model 변경추적과 맞추기 위한 병행 표시.
+  function gridWriteFields(item, fields) {
+    Object.keys(fields).forEach(function (k) {
+      item[k] = fields[k];
+      if (item.dirtyFields && typeof item.dirtyFields === 'object') item.dirtyFields[k] = true;
+    });
+    item.dirty = true;
+  }
+
+  function gridRowEl(kg, item) {
+    var u = gridItemUid(item);
+    if (!u || !kg.tbody || typeof kg.tbody.find !== 'function') return null;
+    var tr = kg.tbody.find('tr[data-uid="' + u + '"]');
+    return (tr && tr.length) ? tr : null;
+  }
+
+  // 새 행을 선택행으로 둔다 — 화면의 getRowData()/refreshRow()는 선택행을 기준으로 동작한다.
+  function gridSelectRow(kg, item) {
+    try {
+      var tr = gridRowEl(kg, item);
+      if (tr && typeof kg.select === 'function') { kg.select(tr); return true; }
+    } catch (e) { console.warn(TAG, '검토행 선택 실패:', e.message); }
+    return false;
+  }
+
+  // 화면의 행(tr)에 기대 문자열이 모두 표시되는지 확인한다.
+  function gridRowShows(kg, item, texts) {
+    var tr = gridRowEl(kg, item);
+    if (!tr || typeof tr.text !== 'function') return false;
+    var txt = String(tr.text() || '');
+    for (var i = 0; i < texts.length; i++) {
+      if (texts[i] && txt.indexOf(texts[i]) === -1) return false;
+    }
+    return true;
+  }
+
+  // 행 재표시: 1) pageGrid.refreshRow(item)  2) kendo grid.refresh() — 재표시 뒤 선택을 복원한다.
+  function gridRenderRow(kg, pageGrid, item, texts) {
+    var shown = false;
+    try {
+      if (pageGrid && typeof pageGrid.refreshRow === 'function') {
+        pageGrid.refreshRow(item);
+        shown = gridRowShows(kg, item, texts);
+      }
+    } catch (e) { console.warn(TAG, 'refreshRow 실패 — kendo refresh로 대체:', e.message); }
+    if (!shown) {
+      try { kg.refresh(); shown = gridRowShows(kg, item, texts); }
+      catch (e2) { console.warn(TAG, 'kendo grid refresh 실패:', e2.message); }
+    }
+    gridSelectRow(kg, item);
+    return shown;
+  }
+
+  // dataSource에 남은 행이 기대값과 같은지 확인한다(화면 표시와 별개로 저장 데이터 기준).
+  function gridVerifyItem(kg, item, fields) {
+    var live = null;
+    var u = gridItemUid(item);
+    if (u && typeof kg.dataSource.getByUid === 'function') live = kg.dataSource.getByUid(u) || null;
+    if (!live) {
+      var d = kg.dataSource.data();
+      for (var i = 0; i < d.length; i++) { if (d[i] === item) { live = d[i]; break; } }
+    }
+    if (!live) return false;
+    var keys = Object.keys(fields);
+    for (var j = 0; j < keys.length; j++) {
+      var v = live[keys[j]];
+      if (String(v == null ? '' : v) !== String(fields[keys[j]])) return false;
+    }
+    return true;
+  }
+
   function addReviewerRow(rec, source) {
     var row = {
-      userId: rec.empNo || '', userNm: rec.empNm || '',
+      userId: String(rec.empNo || '').trim(), userNm: String(rec.empNm || '').trim(),
       deptNm: rec.deptNm || '', fgradeNm: rec.fgradeNm || '', telnoOffc: rec.telnoOffc || ''
     };
     if (!isRegCmplAccepted()) return;
     if (!row.userId || !row.userNm) { toast('추가할 검토자 정보가 없습니다.', 'error'); return; }
 
     var kg = null; try { kg = $('#grid1').data('kendoGrid'); } catch (e) {}
+    var pageGrid = (typeof window.grid1 !== 'undefined') ? window.grid1 : null;
+    if (!kg || !kg.dataSource) {
+      toast('검토자 그리드를 찾지 못했습니다. [행추가] 후 수동 입력해 주세요.', 'error');
+      return;
+    }
 
     // 중복 확인 (Kendo dataSource 기준)
-    if (kg && kg.dataSource) {
-      var arr = kg.dataSource.data();
-      for (var i = 0; i < arr.length; i++) {
-        if (sameEmpNo(arr[i].userId,row.userId)) {
-          toast('이미 추가된 검토자입니다: ' + row.userNm + ' (' + row.userId + ')', 'warn');
-          return;
-        }
+    var arr = kg.dataSource.data();
+    for (var i = 0; i < arr.length; i++) {
+      if (arr[i] && sameEmpNo(arr[i].userId, row.userId)) {
+        toast('이미 추가된 검토자입니다: ' + row.userNm + ' (' + row.userId + ')', 'warn');
+        return;
       }
     }
 
-    // 1순위: 페이지 grid API로 행추가(저장추적 정확) 후, 방금 만들어진 '빈 행'을 직접 채움
-    try {
-      if (typeof grid1 !== 'undefined' && grid1 && grid1.addRow && kg && kg.dataSource) {
-        var beforeRows = Array.from(kg.dataSource.data());
-        grid1.addRow();
-        var d = kg.dataSource.data();
-        var item = null;
-        for (var j = 0; j < d.length; j++) {
-          if (!beforeRows.some(function(x){return x===d[j] || (x.uid && x.uid===d[j].uid);})) { item = d[j]; break; }   // 방금 생긴 빈 행
-        }
-        if(!item){toast('새 검토행 생성을 확인하지 못했습니다. 기존 결재선은 유지됩니다.','warn');return;}
-        // No existing-row fallback.
-        if (item) {
-          Object.keys(row).forEach(function(k){if(typeof item.set==='function')item.set(k,row[k]);else item[k]=row[k];});item.dirty=true;
-          try { kg.refresh(); } catch (e2) { if (grid1.refreshRow) grid1.refreshRow(); }
-          toast(source + ' ' + row.userNm + ' (' + row.userId + ') 검토자 추가 완료', 'ok');
-          console.log(TAG, '검토자 추가(addRow+빈행 채움):', row);
-          return;
-        }
-      }
-    } catch (e) { console.warn(TAG, 'addRow 경로 실패:', e.message); toast('검토행 처리 오류 — 현재 결재선을 확인하세요.','warn'); return; }
-
-    // 2순위(폴백): Kendo dataSource 첫 행(index 0) 직접 삽입
-    try {
-      if (kg && kg.dataSource) {
-        var it = kg.dataSource.insert(0, {
-          userId: row.userId, userNm: row.userNm, deptNm: row.deptNm,
-          fgradeNm: row.fgradeNm, telnoOffc: row.telnoOffc
-        });
-        if (it) it.dirty = true;
-        toast(source + ' ' + row.userNm + ' (' + row.userId + ') 검토자 첫 행 추가(폴백)', 'ok');
-        console.log(TAG, '검토자 추가(dataSource.insert 0):', row);
+    // 1순위: 화면의 [행추가]와 같은 grid1.addRow()로 신규행을 만든다(저장 추적 동일).
+    var item = null, via = '';
+    if (pageGrid && typeof pageGrid.addRow === 'function') {
+      try { item = gridAddBlankRow(kg, pageGrid); }
+      catch (e1) {
+        console.warn(TAG, 'addRow 경로 실패:', e1.message);
+        toast('검토행 추가 실패(' + e1.message + ') — [행추가] 후 직접 선택해 주세요.', 'error');
         return;
       }
-    } catch (e) { console.warn(TAG, 'dataSource.insert 실패:', e.message); }
+      if (!item) { toast('새 검토행 생성을 확인하지 못했습니다. 기존 결재선은 유지됩니다.', 'warn'); return; }
+      via = 'addRow';
+    } else {
+      // 2순위(폴백): Kendo dataSource 첫 행(index 0) 직접 삽입
+      try { item = kg.dataSource.insert(0, { userId: '', userNm: '', deptNm: '', fgradeNm: '', telnoOffc: '' }); }
+      catch (e2) { console.warn(TAG, 'dataSource.insert 실패:', e2.message); }
+      if (!item) { toast('검토자 행을 추가하지 못했습니다. [행추가] 후 수동 입력해 주세요.', 'error'); return; }
+      via = 'dataSource.insert 0';
+    }
 
-    toast('검토자 그리드를 찾지 못했습니다. [행추가] 후 수동 입력해 주세요.', 'error');
+    gridSelectRow(kg, item);      // 화면 핸들러가 선택행 기준이므로 먼저 선택
+    gridWriteFields(item, row);   // 화면 userCallback과 동일한 직접 대입(set() 미사용)
+    var shown = gridRenderRow(kg, pageGrid, item, [row.userNm, row.userId]);
+
+    if (!gridVerifyItem(kg, item, { userId: row.userId, userNm: row.userNm })) {
+      console.warn(TAG, '검토자 행 데이터 확인 실패:', row);
+      toast('검토자 행 데이터를 확인하지 못했습니다. 그리드를 확인한 뒤 [행추가]로 직접 선택해 주세요.', 'error');
+      return;
+    }
+    window.__krissRegCmplLastAdd = { uid: gridItemUid(item), userId: row.userId, at: Date.now() };
+    console.log(TAG, '검토자 추가(' + via + '+직접 대입):', row, shown ? '' : '[표시 미확인]');
+    if (shown) toast(source + ' ' + row.userNm + ' (' + row.userId + ') 검토자 추가 완료', 'ok');
+    else toast(source + ' ' + row.userNm + ' (' + row.userId + ') 검토자 행은 추가됐으나 화면 표시를 확인하지 못했습니다. 저장 전 그리드를 확인하세요.', 'warn');
   }
 
   // ============================================================
@@ -1320,45 +1435,39 @@
       }
     }
 
-    // 1순위: 화면의 kriss.ui.grid.addRow()를 사용해 신규행 상태를 만든 뒤 실제 필드명으로 채운다.
-    try {
-      if (pageGrid && typeof pageGrid.addRow === 'function') {
-        var before = {};
-        var beforeData = Array.from(kg.dataSource.data());
-        for (var j = 0; j < beforeData.length; j++) {
-          if (beforeData[j].uid) before[beforeData[j].uid] = true;
-        }
-
-        pageGrid.addRow();
-
-        var d = kg.dataSource.data();
-        var item = null;
-        for (var k = 0; k < d.length; k++) {
-          if (d[k].uid && !before[d[k].uid]) { item = d[k]; break; }
-        }
-        if (!item) item=Array.from(d).find(function(x){return !beforeData.some(function(b){return b===x || (b.uid && b.uid===x.uid);});}) || null;
-        if(!item){toast('새 검토행 생성을 확인하지 못했습니다. 기존 결재선은 유지됩니다.','warn');return;}
-        // No first/last/previously blank row fallback.
-
-        if (item) {
-          Object.keys(row).forEach(function(k){if(typeof item.set==='function')item.set(k,row[k]);else item[k]=row[k];});item.dirty=true;
-
-          // 원본 [행추가] 핸들러와 동일하게 비어 있는 순번을 현재 행 순서로 보강.
-          if(!item.seqNo){var nextSeq=Array.from(d).indexOf(item)+1;if(typeof item.set==='function')item.set('seqNo',nextSeq);else item.seqNo=nextSeq;}
-
-          try { kg.refresh(); }
-          catch (e2) {
-            try { if (pageGrid.refreshRow) pageGrid.refreshRow(item); } catch (e3) {}
-          }
-
-          toast(source + ' ' + row.ivenEmpNm + ' (' + row.ivenEmpNo + ') 검토자 추가 완료', 'ok');
-          console.log(TAG, '출원결과검토 검토자 추가(addRow):', row);
-          return;
-        }
+    // 1순위: 화면의 kriss.ui.grid.addRow()로 신규행을 만든 뒤 화면 userCallback 계약(직접 대입)으로 채운다. [v1.11.2]
+    if (pageGrid && typeof pageGrid.addRow === 'function') {
+      var item = null;
+      try { item = gridAddBlankRow(kg, pageGrid); }
+      catch (e4) {
+        console.warn(TAG, '출원결과검토 addRow 경로 실패:', e4.message);
+        toast('검토행 추가 실패(' + e4.message + ') — [행추가] 후 직접 선택해 주세요.', 'error');
+        return;
       }
-    } catch (e4) {
-      console.warn(TAG, '출원결과검토 addRow 경로 실패:', e4.message);
-      toast('검토행 처리 오류 — 현재 결재선을 확인하세요.','warn');return;
+      if (!item) { toast('새 검토행 생성을 확인하지 못했습니다. 기존 결재선은 유지됩니다.', 'warn'); return; }
+
+      var fields = {};
+      Object.keys(row).forEach(function (k) { fields[k] = row[k]; });
+      // 원본 [행추가] 핸들러와 동일하게 비어 있는 순번을 현재 행 순서로 보강.
+      if (!item.seqNo) {
+        var d = kg.dataSource.data(), nextSeq = 0;
+        for (var s = 0; s < d.length; s++) { if (d[s] === item) { nextSeq = s + 1; break; } }
+        if (nextSeq) fields.seqNo = nextSeq;
+      }
+
+      gridSelectRow(kg, item);
+      gridWriteFields(item, fields);
+      var shown = gridRenderRow(kg, pageGrid, item, [row.ivenEmpNm, row.ivenEmpNo]);
+
+      if (!gridVerifyItem(kg, item, { ivenEmpNo: row.ivenEmpNo, ivenEmpNm: row.ivenEmpNm })) {
+        console.warn(TAG, '출원결과검토 검토자 행 데이터 확인 실패:', row);
+        toast('검토자 행 데이터를 확인하지 못했습니다. 그리드를 확인한 뒤 [행추가]로 직접 선택해 주세요.', 'error');
+        return;
+      }
+      console.log(TAG, '출원결과검토 검토자 추가(addRow+직접 대입):', row, shown ? '' : '[표시 미확인]');
+      if (shown) toast(source + ' ' + row.ivenEmpNm + ' (' + row.ivenEmpNo + ') 검토자 추가 완료', 'ok');
+      else toast(source + ' ' + row.ivenEmpNm + ' (' + row.ivenEmpNo + ') 검토자 행은 추가됐으나 화면 표시를 확인하지 못했습니다. 저장 전 그리드를 확인하세요.', 'warn');
+      return;
     }
 
     // 2순위: Kendo dataSource 직접 추가. 저장 추적을 위해 dirty=true 처리.
