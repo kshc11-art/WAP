@@ -45,6 +45,14 @@
 
 `대체|환원` 제외분의 순액은 0이 아니므로 상대계정·전표 목적 없이는 비용 제외의 적합성을 확정할 수 없다. 수작업 기초통계의 백만원 단위 값은 기준일·범위·반올림 정책이 확정되지 않았고 사용자 지정 golden으로 채택하지 않았다. 제공 원장·상세목록·통계 XLSX는 Git에 올리지 않았다. 상세목록 고유키 결합, 미결합·다의 행, 화면 조회 전량, 사내망·Office 출력은 확인 대기다. 백업 시 비활성 상태를 회사 PC의 배포·활성화 상태로 해석하지 않는다.
 
+## 입력 Helper 1.11.2 — 등록완료 보고·출원결과검토 검토자 자동추가 수정
+
+[설치용 userscript](scripts/ipms-input-helper.user.js)의 이름·namespace는 유지한다. 등록완료 보고 화면(BPM B_RES00011 경로에서 열림)에서 주발명자 검토자 자동추가가 `addRow 경로 실패: Cannot read properties of null (reading 'uid')`로 끝나고 검토자가 들어가지 않던 문제를 수정했다.
+
+원인은 새 검토행을 Kendo `item.set()`으로 채운 것이다. 성명(userNm) 변경 이벤트가 화면 자체의 dataChange 핸들러를 실행해 동기 사번 조회 후 `grid1.refreshRow()`(선택행 기준) 또는 사용자 조회 팝업을 호출하는데, 방금 추가한 행은 선택되어 있지 않아 예외가 났다. 부서·직급·구내번호는 `editable:false`라 `set()`이 무시했다. 1.11.2는 화면의 userCallback과 같은 방식(직접 대입 + dirty + refreshRow(item), 실패 시 Kendo refresh)으로 채우고, 새 행을 선택한 뒤 dataSource 값과 화면 표시를 확인한 경우에만 완료로 안내한다. 화면 표시만 확인하지 못하면 경고로 구분한다. 타임아웃 경로로 먼저 추가한 뒤 검토자 목록 재조회로 행이 비면 1회만 재추가한다. 출원결과검토 화면의 같은 채움 경로도 동일하게 바꿨다.
+
+합성 회귀는 `node --test tests/test_input_helper.cjs`로 실행한다. 화면 핸들러를 흉내 낸 그리드 대역으로 예외 재현, 직접 대입, 선택·재표시 폴백, 중복, 재추가 1회를 검사하며 실제 사번·이름은 쓰지 않는다. **내부망 확인 대기:** 등록완료 보고에서 자동추가·[주발명자] 버튼 후 임시저장·승인 시 검토자 저장, 사용자 조회 팝업이 뜨지 않는지, 출원결과검토 화면의 순번·저장, 재조회 후 재추가. 합성 테스트 통과를 실서버 처리 완료로 간주하지 않는다.
+
 ## 2026-09-14 재검토·스크립트 분석
 
 분석 대상은 Tampermonkey 24개와 기타 프로그램 9개 전체입니다. 구조 정리 상태를 다시 확인하고 통계·브라우저·문서 처리의 역할과 실패 경로를 검토했습니다. 분석 기준은 main `741f252`이며 상세 근거의 행 번호는 해당 기준본을 가리킵니다. 아래 '재현'은 합성 입력 또는 모형에서 조건을 확인했다는 뜻이며 실제 업무 오류 건수는 아닙니다.
@@ -77,7 +85,7 @@
 python -m pip install -r requirements-dev.txt
 python tools/check.py
 python -m unittest discover -s tests -v
-node --test tests/test_dashboard.cjs
+node --test tests/test_dashboard.cjs tests/test_stats_ledger.cjs tests/test_input_helper.cjs
 python validation/run.py status
 python validation/diagnostics.py
 ```
